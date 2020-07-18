@@ -7,7 +7,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Zenacy.HTML.Internal.Lexer.Tests
-  ( tests
+  ( testLexer
   ) where
 
 import Zenacy.HTML.Internal.BS
@@ -35,6 +35,7 @@ import Data.Monoid
   )
 import Test.Framework
   ( Test
+  , testGroup
   )
 import Test.Framework.Providers.HUnit
   ( testCase
@@ -46,8 +47,8 @@ import Test.HUnit
   )
 import Text.RawString.QQ
 
-tests :: [Test]
-tests =
+testLexer :: Test
+testLexer = testGroup "Zenacy.HTML.Internal.Lexer"
   [ testBasic
   , testBuffer
   , testComment

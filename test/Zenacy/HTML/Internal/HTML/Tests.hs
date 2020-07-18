@@ -7,7 +7,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Zenacy.HTML.Internal.HTML.Tests
-  ( tests
+  ( testHtml
   ) where
 
 import Zenacy.HTML
@@ -16,6 +16,7 @@ import Data.Default
   )
 import Test.Framework
   ( Test
+  , testGroup
   )
 import Test.Framework.Providers.HUnit
   ( testCase
@@ -33,8 +34,8 @@ import qualified Data.Text as T
   )
 import Text.RawString.QQ
 
-tests :: [Test]
-tests =
+testHtml :: Test
+testHtml = testGroup "Zenacy.HTML.Internal.HTML"
   [ testBasic
   , testAA1
   , testAA2

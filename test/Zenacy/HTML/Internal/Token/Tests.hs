@@ -5,7 +5,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Zenacy.HTML.Internal.Token.Tests
-  ( tests
+  ( testToken
   ) where
 
 import Zenacy.HTML.Internal.BS
@@ -16,6 +16,7 @@ import Control.Monad
 import Control.Monad.ST
 import Test.Framework
   ( Test
+  , testGroup
   )
 import Test.Framework.Providers.HUnit
   ( testCase
@@ -26,8 +27,8 @@ import Test.HUnit
   , assertFailure
   )
 
-tests :: [Test]
-tests =
+testToken :: Test
+testToken = testGroup "Zenacy.HTML.Internal.Token"
   [ testType
   , testDoctype
   , testStart

@@ -5,7 +5,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Zenacy.HTML.Query.Tests
-  ( tests
+  ( testQuery
   ) where
 
 import Zenacy.HTML
@@ -15,6 +15,7 @@ import Data.Maybe
   )
 import Test.Framework
   ( Test
+  , testGroup
   )
 import Test.Framework.Providers.HUnit
   ( testCase
@@ -25,8 +26,8 @@ import Test.HUnit
   , assertFailure
   )
 
-tests :: [Test]
-tests =
+testQuery :: Test
+testQuery = testGroup "Zenacy.HTML.Query"
   [ testFirst
   , testLast
   , testNext

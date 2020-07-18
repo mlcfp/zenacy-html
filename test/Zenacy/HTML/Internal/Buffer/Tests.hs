@@ -5,7 +5,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Zenacy.HTML.Internal.Buffer.Tests
-  ( tests
+  ( testBuffer
   ) where
 
 import Zenacy.HTML.Internal.Buffer
@@ -14,6 +14,7 @@ import Control.Monad.ST
 import qualified Data.ByteString as S
 import Test.Framework
   ( Test
+  , testGroup
   )
 import Test.Framework.Providers.HUnit
   ( testCase
@@ -24,8 +25,8 @@ import Test.HUnit
   , assertFailure
   )
 
-tests :: [Test]
-tests =
+testBuffer :: Test
+testBuffer = testGroup "Zenacy.HTML.Internal.Buffer"
   [ testCapacity
   , testSize
   , testReset

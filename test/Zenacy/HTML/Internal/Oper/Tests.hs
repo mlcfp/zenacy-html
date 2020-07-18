@@ -5,7 +5,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Zenacy.HTML.Internal.Oper.Tests
-  ( tests
+  ( testOper
   ) where
 
 import Zenacy.HTML
@@ -24,6 +24,7 @@ import Data.Maybe
   )
 import Test.Framework
   ( Test
+  , testGroup
   )
 import Test.Framework.Providers.HUnit
   ( testCase
@@ -34,8 +35,8 @@ import Test.HUnit
   , assertFailure
   )
 
-tests :: [Test]
-tests =
+testOper :: Test
+testOper = testGroup "Zenacy.HTML.Internal.Oper"
   [ testStyle
   ]
 

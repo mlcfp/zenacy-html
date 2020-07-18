@@ -5,7 +5,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Zenacy.HTML.Internal.Zip.Tests
-  ( tests
+  ( testZip
   ) where
 
 import Zenacy.HTML
@@ -22,6 +22,7 @@ import Data.Maybe
   )
 import Test.Framework
   ( Test
+  , testGroup
   )
 import Test.Framework.Providers.HUnit
   ( testCase
@@ -38,8 +39,8 @@ import qualified Data.Text as T
   ( concat
   )
 
-tests :: [Test]
-tests =
+testZip :: Test
+testZip = testGroup "Zenacy.HTML.Internal.Zip"
   [ testFind
   , testFirst
   , testLast

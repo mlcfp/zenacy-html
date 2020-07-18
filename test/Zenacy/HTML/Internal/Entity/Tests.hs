@@ -5,12 +5,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Zenacy.HTML.Internal.Entity.Tests
-  ( tests
+  ( testEntity
   ) where
 
 import Zenacy.HTML.Internal.Entity
 import Test.Framework
   ( Test
+  , testGroup
   )
 import Test.Framework.Providers.HUnit
   ( testCase
@@ -21,8 +22,8 @@ import Test.HUnit
   , assertFailure
   )
 
-tests :: [Test]
-tests =
+testEntity :: Test
+testEntity = testGroup "Zenacy.HTML.Internal.Entity"
   [ testGeneral
   , testLongest
   ]

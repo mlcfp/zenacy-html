@@ -7,7 +7,7 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Zenacy.HTML.Internal.Parser.Tests
-  ( tests
+  ( testParser
   ) where
 
 import Zenacy.HTML.Internal.BS
@@ -41,6 +41,7 @@ import GHC.Exts
   )
 import Test.Framework
   ( Test
+  , testGroup
   )
 import Test.Framework.Providers.HUnit
   ( testCase
@@ -56,8 +57,8 @@ import Text.Show.Pretty
   , pPrint
   )
 
-tests :: [Test]
-tests =
+testParser :: Test
+testParser = testGroup "Zenacy.HTML.Internal.Parser"
   [ testBasic
   , testComment
   , testTemplate

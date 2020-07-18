@@ -5,7 +5,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Zenacy.HTML.Internal.Image.Tests
-  ( tests
+  ( testImage
   ) where
 
 import Zenacy.HTML.Internal.BS
@@ -20,6 +20,7 @@ import qualified Data.Text as T
   )
 import Test.Framework
   ( Test
+  , testGroup
   )
 import Test.Framework.Providers.HUnit
   ( testCase
@@ -30,8 +31,8 @@ import Test.HUnit
   , assertFailure
   )
 
-tests :: [Test]
-tests =
+testImage :: Test
+testImage = testGroup "Zenacy.HTML.Internal.Image"
   [ testParse
   , testRender
   , testURL
