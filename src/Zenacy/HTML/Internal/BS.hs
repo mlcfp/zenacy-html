@@ -9,6 +9,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | Convenience wrappers and utilities for byte strings.
 module Zenacy.HTML.Internal.BS
   ( BS
   -- * Word functions.
@@ -60,36 +61,45 @@ import Data.Word
   ( Word8
   )
 
+-- | A type abbreviation for a byte string.
 type BS = ByteString
 
+-- | An empty byte string.
 bsEmpty :: BS
 bsEmpty = S.empty
 {-# INLINE bsEmpty #-}
 
+-- | A byte string with only one character.
 bsOnly :: Word8 -> BS
 bsOnly = S.singleton
 {-# INLINE bsOnly #-}
 
+-- | Gets the length of a byte string.
 bsLen :: BS -> Int
 bsLen = S.length
 {-# INLINE bsLen #-}
 
+-- | Converts a list of characters to a byte string.
 bsPack :: [Word8] -> BS
 bsPack = S.pack
 {-# INLINE bsPack #-}
 
+-- | Converts a byte string to a list of characters.
 bsUnpack :: BS -> [Word8]
 bsUnpack = S.unpack
 {-# INLINE bsUnpack #-}
 
+-- | Concatenates byte strings into one.
 bsConcat :: [BS] -> BS
 bsConcat = S.concat
 {-# INLINE bsConcat #-}
 
+-- | Gets the character at an index in a byte string.
 bsIndex :: BS -> Int -> Word8
 bsIndex = S.index
 {-# INLINE bsIndex #-}
 
+-- | Gets the index of a character in a byte string.
 bsElemIndex :: Word8 -> BS -> Maybe Int
 bsElemIndex = S.elemIndex
 {-# INLINE bsElemIndex #-}
@@ -112,22 +122,27 @@ bsLast x
   | bsLen x > 0 = Just $ S.last x
   | otherwise = Nothing
 
+-- | Takes characters from a byte string.
 bsTake :: Int -> BS -> BS
 bsTake = S.take
 {-# INLINE bsTake #-}
 
+-- | Drops characters from a byte string.
 bsDrop :: Int -> BS -> BS
 bsDrop = S.drop
 {-# INLINE bsDrop #-}
 
+-- | Removes a character from the end of a byte string.
 bsUncons :: BS -> Maybe (Word8, BS)
 bsUncons = S.uncons
 {-# INLINE bsUncons #-}
 
+-- | Converts a string to a byte string.
 bcPack :: String -> BS
 bcPack = C.pack
 {-# INLINE bcPack #-}
 
+-- | Converts a bytestring to a string.
 bcUnpack :: BS -> String
 bcUnpack = C.unpack
 {-# INLINE bcUnpack #-}

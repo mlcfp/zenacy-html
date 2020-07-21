@@ -9,6 +9,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | The HTML Lexer.
 module Zenacy.HTML.Internal.Lexer
   ( Lexer(..)
   , LexerOptions(..)

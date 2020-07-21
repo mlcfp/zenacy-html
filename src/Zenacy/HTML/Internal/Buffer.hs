@@ -9,6 +9,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | Defines an buffer type.
 module Zenacy.HTML.Internal.Buffer
   ( Buffer(..)
   , bufferNew

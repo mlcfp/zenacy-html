@@ -9,6 +9,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | Defines operations on html data types.
 module Zenacy.HTML.Internal.Oper
   ( htmlNodeIsElem
   , htmlNodeIsText

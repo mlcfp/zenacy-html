@@ -9,6 +9,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | Defines a token type used by the lexer.
 module Zenacy.HTML.Internal.Token
   ( Token(..)
   , TokenBuffer(..)

@@ -9,6 +9,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | Defines core functions that augment the prelude.
 module Zenacy.HTML.Internal.Core
   ( updateSTRef
   , rref

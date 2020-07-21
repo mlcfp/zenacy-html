@@ -9,10 +9,11 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | Matches and extracts entities from byte strings.
 module Zenacy.HTML.Internal.Entity
-  ( entityData
-  , entityMatch
+  ( entityMatch
   , entityTrie
+  , entityData
   ) where
 
 import Zenacy.HTML.Internal.BS

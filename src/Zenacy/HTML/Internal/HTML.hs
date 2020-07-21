@@ -9,6 +9,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | Defines the top-level HTML types and parser functions.
 module Zenacy.HTML.Internal.HTML
   ( HTMLOptions(..)
   , HTMLResult(..)
@@ -63,18 +64,23 @@ import qualified Data.Text.Encoding as T
 -- | Defines options for the HTML parser.
 data HTMLOptions = HTMLOptions
   { htmlOptionLogErrors      :: !Bool
+    -- ^ Indicates that errors should be logged.
   , htmlOptionIgnoreEntities :: !Bool
+    -- ^ Indicates that entities should not be decoded.
   } deriving (Eq, Ord, Show)
 
 -- | Defines an HTML parser result.
 data HTMLResult = HTMLResult
   { htmlResultDocument :: !HTMLNode
+    -- ^ The parsed document structure.
   , htmlResultErrors   :: ![HTMLError]
+    -- ^ The errors logged while parsing if error logging was enabled.
   } deriving (Eq, Ord, Show)
 
 -- | An HTML error type.
 data HTMLError = HTMLError
   { htmlErrorText  :: !Text
+    -- ^ The error message.
   } deriving (Show, Eq, Ord)
 
 -- | Html node is the model type for an HTML document.
@@ -148,9 +154,9 @@ instance Default HTMLAttr where
 
 -- | Parses an HTML document.
 htmlParse :: HTMLOptions -> Text -> Either HTMLError HTMLResult
-htmlParse HTMLOptions{..} x =
+htmlParse HTMLOptions {..} x =
   case d of
-    Right ParserResult{..} ->
+    Right ParserResult {..} ->
       Right def
         { htmlResultDocument = domToHTML parserResultDOM
         , htmlResultErrors   = map f parserResultErrors
@@ -172,7 +178,7 @@ htmlParseEasy =
 
 -- | Parses an HTML fragment.
 htmlFragment :: HTMLOptions -> Text -> Either HTMLError HTMLResult
-htmlFragment HTMLOptions{..} x = Left def
+htmlFragment HTMLOptions {..} x = Left def
   { htmlErrorText = "fragment support not currently implemented" }
 
 -- | Defines a default document.
@@ -245,34 +251,34 @@ domToHTML d = nodeToHTML d $ domDocument d
 -- | Converts a DOM node to an HTML node.
 nodeToHTML :: DOM -> DOMNode -> HTMLNode
 nodeToHTML d = go where
-  go DOMDocument{..} = HTMLDocument
+  go DOMDocument {..} = HTMLDocument
     { htmlDocumentName     = t domDocumentName
     , htmlDocumentChildren = f domDocumentChildren
     }
-  go DOMDoctype{..} = HTMLDoctype
+  go DOMDoctype {..} = HTMLDoctype
     { htmlDoctypeName     = t domDoctypeName
     , htmlDoctypePublicID = t <$> domDoctypePublicID
     , htmlDoctypeSystemID = t <$> domDoctypeSystemID
     }
-  go DOMFragment{..} = HTMLFragment
+  go DOMFragment {..} = HTMLFragment
     { htmlFragmentName     = t domFragmentName
     , htmlFragmentChildren = f domFragmentChildren
     }
-  go DOMElement{..} = HTMLElement
+  go DOMElement {..} = HTMLElement
     { htmlElementName       = t domElementName
     , htmlElementNamespace  = domElementNamespace
     , htmlElementAttributes = h domElementAttributes
     , htmlElementChildren   = f domElementChildren
     }
-  go DOMTemplate{..} = HTMLTemplate
+  go DOMTemplate {..} = HTMLTemplate
     { htmlTemplateNamespace  = domTemplateNamespace
     , htmlTemplateAttributes = h domTemplateAttributes
     , htmlTemplateContents   = g domTemplateContents
     }
-  go DOMText{..} = HTMLText
+  go DOMText {..} = HTMLText
     { htmlTextData = t domTextData
     }
-  go DOMComment{..} = HTMLComment
+  go DOMComment {..} = HTMLComment
     { htmlCommentData = t domCommentData
     }
   f = map go . domMapID d . toList

@@ -10,6 +10,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE ViewPatterns #-}
 
+-- | Defines the HTML DOM types and functions.
 module Zenacy.HTML.Internal.DOM
   ( DOM(..)
   , DOMNode(..)

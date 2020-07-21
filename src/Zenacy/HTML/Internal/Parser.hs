@@ -9,6 +9,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | The HTML parser.
 module Zenacy.HTML.Internal.Parser
   ( Parser(..)
   , ParserOptions(..)

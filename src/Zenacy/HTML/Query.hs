@@ -10,6 +10,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
+-- | A very basic query-like DSL.
 module Zenacy.HTML.Query
   ( HTMLQuery
   , run

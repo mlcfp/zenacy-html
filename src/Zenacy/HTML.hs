@@ -2,6 +2,8 @@
 -- Copyright (C) 2016 Zenacy Reader Technologies LLC
 --------------------------------------------------------------------------------
 
+-- | The Zenacy HTML Parser, and standards-compliant HTML parsing library.
+-- Supports parsing, rewriting, rendering, and various other operations.
 module Zenacy.HTML
   ( module X
   ) where

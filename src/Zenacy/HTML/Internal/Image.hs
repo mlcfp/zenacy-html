@@ -9,6 +9,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | Defines html image handling functions.
 module Zenacy.HTML.Internal.Image
   ( HTMLSrcset(..)
   , HTMLSrcsetCandidate(..)

@@ -9,6 +9,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | Defines types for zipping and iterating over HTML trees.
 module Zenacy.HTML.Internal.Zip
   ( HTMLZipper
   , HTMLZipAction

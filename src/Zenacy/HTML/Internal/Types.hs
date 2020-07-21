@@ -9,6 +9,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | Defines supporting types.
 module Zenacy.HTML.Internal.Types
   ( HTMLNamespace(..)
   , HTMLAttrNamespace(..)

@@ -9,6 +9,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- | Defines the HTML render.
 module Zenacy.HTML.Internal.Render
   ( htmlPrint
   , htmlPrintPretty
