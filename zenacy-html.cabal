@@ -134,6 +134,7 @@ test-suite zenacy-html-test
     , Zenacy.HTML.Internal.Trie.Tests
     , Zenacy.HTML.Internal.Zip.Tests
     , Zenacy.HTML.Query.Tests
+    , Samples
 
 benchmark zenacy-html-bench
   type:

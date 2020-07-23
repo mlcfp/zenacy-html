@@ -4,6 +4,7 @@
 
 module Main where
 
+import Samples
 import Zenacy.HTML.Internal.Buffer.Tests
 import Zenacy.HTML.Internal.Entity.Tests
 import Zenacy.HTML.Internal.HTML.Tests
@@ -15,7 +16,6 @@ import Zenacy.HTML.Internal.Token.Tests
 import Zenacy.HTML.Internal.Trie.Tests
 import Zenacy.HTML.Internal.Zip.Tests
 import Zenacy.HTML.Query.Tests
-
 import Test.Framework
   ( defaultMain
   )
@@ -33,4 +33,5 @@ main = defaultMain
   , testTrie
   , testZip
   , testQuery
+  , testSamples
   ]
