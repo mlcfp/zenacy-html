@@ -3,7 +3,7 @@ name:
 version:
   1.0.0
 synopsis:
-  HTML Parser
+  A standard compliant HTML parser
 description:
   Please see README.md
 homepage:
@@ -13,9 +13,9 @@ license:
 license-file:
   LICENSE
 author:
-  Michael Williams
+  Michael Williams <mlcfp@icloud.com>
 maintainer:
-  support@zenacy.app
+  Michael Williams <mlcfp@icloud.com>
 copyright:
   Copyright (C) Zenacy Reader Technologies LLC
 category:
@@ -24,6 +24,8 @@ build-type:
   Simple
 cabal-version:
   >=1.10
+extra-source-files:
+  README.md CHANGES.md
 
 library
   hs-source-dirs:
@@ -48,7 +50,7 @@ library
     , Zenacy.HTML.Internal.Zip
     , Zenacy.HTML.Query
   build-depends:
-    base
+    base == 4.*
     , bytestring
     , containers
     , data-default
@@ -78,7 +80,7 @@ executable zenacy-html-exe
   ghc-options:
     -O3 -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-    base
+    base == 4.*
     , bytestring
     , containers
     , data-default
@@ -100,7 +102,7 @@ test-suite zenacy-html-test
   main-is:
     TestSuite.hs
   build-depends:
-    base
+    base == 4.*
     , bytestring
     , containers
     , data-default
@@ -141,7 +143,7 @@ benchmark zenacy-html-bench
   main-is:
     BenchMain.hs
   build-depends:
-    base
+    base == 4.*
     , bytestring
     , containers
     , data-default
