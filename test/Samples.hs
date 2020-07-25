@@ -26,6 +26,9 @@ import Test.HUnit
   , assertEqual
   , assertFailure
   )
+-- import Control.Monad.Writer
+--   ( Writer
+--   )
 import Data.Text
   ( Text
   )

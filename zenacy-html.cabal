@@ -3,9 +3,15 @@ name:
 version:
   1.0.0
 synopsis:
-  A standard compliant HTML parser
+  A standard compliant HTML parsing library
 description:
-  Please see README.md
+  Zenacy HTML is an HTML parsing and processing library that implements the
+  WHATWG HTML parsing standard.  The standard is described as a state machine
+  that this library implements exactly as spelled out including all the error
+  handling, recovery, and conformance checks that makes it robust in handling
+  any HTML pulled from the web.  In addition to parsing, the library provides
+  many processing features to help extract information from web pages or
+  rewrite them and render the modified results.
 homepage:
   http://zenacy.app/
 license:
@@ -17,7 +23,8 @@ author:
 maintainer:
   Michael Williams <mlcfp@icloud.com>
 copyright:
-  Copyright (C) Zenacy Reader Technologies LLC
+  Copyright (C) 2016-2020 Zenacy Reader Technologies LLC
+  Copyright (C) 2020 Michael P Williams
 category:
   Web
 build-type:

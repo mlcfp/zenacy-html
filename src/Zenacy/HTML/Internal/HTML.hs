@@ -83,37 +83,37 @@ data HTMLError = HTMLError
     -- ^ The error message.
   } deriving (Show, Eq, Ord)
 
--- | Html node is the model type for an HTML document.
+-- | Defines the model type for an HTML document.
 data HTMLNode
-  = HTMLDocument
-    { htmlDocumentName       :: !Text
-    , htmlDocumentChildren   :: ![HTMLNode]
+  = HTMLDocument                                -- ^ A document node.
+    { htmlDocumentName       :: !Text           -- ^ The document name.
+    , htmlDocumentChildren   :: ![HTMLNode]     -- ^ The document children.
     }
-  | HTMLDoctype
-    { htmlDoctypeName        :: !Text
-    , htmlDoctypePublicID    :: !(Maybe Text)
-    , htmlDoctypeSystemID    :: !(Maybe Text)
+  | HTMLDoctype                                 -- ^ A DOCTYPE node.
+    { htmlDoctypeName        :: !Text           -- ^ The DOCTYPE name.
+    , htmlDoctypePublicID    :: !(Maybe Text)   -- ^ The public ID.
+    , htmlDoctypeSystemID    :: !(Maybe Text)   -- ^ The system ID.
     }
-  | HTMLFragment
-    { htmlFragmentName       :: !Text
-    , htmlFragmentChildren   :: ![HTMLNode]
+  | HTMLFragment                                -- ^ A fragment node.
+    { htmlFragmentName       :: !Text           -- ^ The fragment name.
+    , htmlFragmentChildren   :: ![HTMLNode]     -- ^ The fragment children.
     }
-  | HTMLElement
-    { htmlElementName        :: !Text
-    , htmlElementNamespace   :: !HTMLNamespace
-    , htmlElementAttributes  :: ![HTMLAttr]
-    , htmlElementChildren    :: ![HTMLNode]
+  | HTMLElement                                 -- ^ An element node.
+    { htmlElementName        :: !Text           -- ^ The element name.
+    , htmlElementNamespace   :: !HTMLNamespace  -- ^ The element namespace.
+    , htmlElementAttributes  :: ![HTMLAttr]     -- ^ The element attributes.
+    , htmlElementChildren    :: ![HTMLNode]     -- ^ The element children.
     }
-  | HTMLTemplate
-    { htmlTemplateNamespace  :: !HTMLNamespace
-    , htmlTemplateAttributes :: ![HTMLAttr]
-    , htmlTemplateContents   :: !HTMLNode
+  | HTMLTemplate                                -- ^ A template node.
+    { htmlTemplateNamespace  :: !HTMLNamespace  -- ^ The template namespace.
+    , htmlTemplateAttributes :: ![HTMLAttr]     -- ^ The template attributes.
+    , htmlTemplateContents   :: !HTMLNode       -- ^ The template contents.
     }
-  | HTMLText
-    { htmlTextData           :: !Text
+  | HTMLText                                    -- ^ A text node.
+    { htmlTextData           :: !Text           -- ^ The text value.
     }
-  | HTMLComment
-    { htmlCommentData        :: !Text
+  | HTMLComment                                 -- ^ A comment node.
+    { htmlCommentData        :: !Text           -- ^ The comment text.
     }
     deriving (Eq, Ord, Show)
 

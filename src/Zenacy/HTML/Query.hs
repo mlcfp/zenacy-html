@@ -82,9 +82,6 @@ import Data.Maybe
 import Data.Text
   ( Text
   )
--- import qualified Data.Text as T
---   ( concat
---   )
 
 -- | Defines the query state.
 type QueryState = (HTMLZipper, IntMap HTMLZipper)
