@@ -26,9 +26,9 @@ import Test.HUnit
   , assertEqual
   , assertFailure
   )
--- import Control.Monad.Writer
---   ( Writer
---   )
+import Data.Maybe
+  ( fromJust
+  )
 import Data.Text
   ( Text
   )
@@ -40,6 +40,8 @@ import Text.RawString.QQ
 testSamples :: Test
 testSamples = testGroup "Samples"
   [ testHello
+  , testRewrite
+  , testExtract
   ]
 
 testHello :: Test
@@ -86,3 +88,41 @@ testHello = testCase "sample hello" $ do
                     [ HTMLText
                       { htmlTextData = "HelloWorld" }
                     ] } ] } ] } ] }
+
+testRewrite :: Test
+testRewrite = testCase "sample rewrite" $ do
+  flip (assertEqual "Sample 1")
+    (rewrite "<span>Hello</span><span>World</span>")
+    "<html><head></head><body><div>Hello</div><div>World</div></body></html>"
+
+rewrite :: Text -> Text
+rewrite = htmlRender . htmlMapElem f . fromJust . htmlDocHtml . htmlParseEasy
+  where
+    f x
+      | htmlElemHasName "span" x = htmlElemRename "div" x
+      | otherwise = x
+
+testExtract :: Test
+testExtract = testCase "sample extract" $ do
+  flip (assertEqual "Sample 1")
+    (extract "<a href=\"https://example1.com\"></a><a href=\"https://example2.com\"></a>")
+    [ "https://example1.com"
+    , "https://example2.com"
+    ]
+
+extract :: Text -> [Text]
+extract = go . htmlParseEasy
+  where
+    go = \case
+      HTMLDocument n c ->
+        concatMap go c
+      e @ (HTMLElement "a" s a c) ->
+        case htmlElemAttrFind (htmlAttrHasName "href") e of
+          Just (HTMLAttr n v s) ->
+            v : concatMap go c
+          Nothing ->
+            concatMap go c
+      HTMLElement n s a c ->
+        concatMap go c
+      _otherwise ->
+        []

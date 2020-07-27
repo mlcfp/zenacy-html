@@ -50,6 +50,7 @@ library
     , Zenacy.HTML.Internal.Lexer
     , Zenacy.HTML.Internal.Oper
     , Zenacy.HTML.Internal.Parser
+    , Zenacy.HTML.Internal.Query
     , Zenacy.HTML.Internal.Render
     , Zenacy.HTML.Internal.Token
     , Zenacy.HTML.Internal.Trie

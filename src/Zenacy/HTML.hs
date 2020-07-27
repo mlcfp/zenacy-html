@@ -17,6 +17,15 @@ module Zenacy.HTML
   -- * Hello, World
   -- $example
 
+  -- * Rewriting
+  -- $rewrite
+
+  -- * Extraction
+  -- $extract
+
+  -- * Samples
+  -- $samples
+
   -- * Origin
   -- $history
 
@@ -45,6 +54,10 @@ import Zenacy.HTML.Internal.Zip as X
 -- the web.  Having a parser that can handle all the nuances of poorly
 -- formatted HTML helps to make this extraction as robust as possible.
 -- This was a key motivation in deciding to implement a parser in this fashion.
+-- Additionally, the standard describes the algorithms needed to produce the
+-- correct document structure.  Applications that are sensitive to the
+-- document structure, such as extracting and rewriting large portions of
+-- a web page, may benefit from Zenacy HTML.
 --
 -- The library provides a wide variety of features including:
 --
@@ -85,13 +98,66 @@ import Zenacy.HTML.Internal.Zip as X
 --
 -- > "<html><head></head><body><div>HelloWorld</div></body></html>"
 --
+-- $rewrite
+--
+-- This example illustrates a function that converts span elements to divs.
+-- 
+-- > rewrite :: Text -> Text
+-- > rewrite = htmlRender . htmlMapElem f . fromJust . htmlDocHtml . htmlParseEasy
+-- >   where
+-- >     f x
+-- >       | htmlElemHasName "span" x = htmlElemRename "div" x
+-- >       | otherwise = x
+-- >
+-- > rewrite "<span>Hello</span><span>World</span>"
+--
+-- Running the above gives the modified document.
+--
+-- > "<html><head></head><body><div>Hello</div><div>World</div></body></html>"
+--
+-- $extract
+--
+-- The next example shows one way to find all the hyperlinks in a document.
+-- This solution recurses over the document elements while ignoring fragments
+-- and templates.
+--
+-- > extract :: Text -> [Text]
+-- > extract = go . htmlParseEasy
+-- >   where
+-- >     go = \case
+-- >       HTMLDocument n c ->
+-- >         concatMap go c
+-- >       e @ (HTMLElement "a" s a c) ->
+-- >         case htmlElemAttrFind (htmlAttrHasName "href") e of
+-- >           Just (HTMLAttr n v s) ->
+-- >             v : concatMap go c
+-- >           Nothing ->
+-- >             concatMap go c
+-- >       HTMLElement n s a c ->
+-- >         concatMap go c
+-- >       _otherwise ->
+-- >         []
+-- >
+-- > extract "<a href=\"https://example1.com\"></a><a href=\"https://example2.com\"></a>"
+--
+-- The extract function will give the following list.
+--
+-- > [ "https://example1.com"
+-- > , "https://example2.com"
+-- > ]
+--
+-- $samples
+--
+-- The unit tests include the above samples as well as many other example
+-- usages of the library.
+--
 -- $history
 --
--- Zenacy HTML was originally developed by Zenacy Reader Technologies LLC starting
--- around 2015 for use in a web reading SaaS.  The need to understand and handle
+-- Zenacy HTML was originally developed for Zenacy Reader Technologies LLC
+-- starting around 2015 and used in a web reading SaaS for a few years.
+-- The need to understand and handle
 -- the wide variety and sublties of HTML found on the web lead to the development
 -- of library that closely followed the standard.  The library was tweaked and
 -- optimized a bit and though there is room for more improvements the result
 -- worked quite well in production (a lot of credit goes to the GHC team and Haskell
--- community for providing such great, fast functional programming tooling).
--- 
+-- community for providing such great, fast functional programming tools).
