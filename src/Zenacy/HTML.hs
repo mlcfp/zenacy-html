@@ -35,6 +35,7 @@ module Zenacy.HTML
 import Zenacy.HTML.Internal.HTML as X
 import Zenacy.HTML.Internal.Image as X
 import Zenacy.HTML.Internal.Oper as X
+import Zenacy.HTML.Internal.Query as X
 import Zenacy.HTML.Internal.Render as X
 import Zenacy.HTML.Internal.Zip as X
 

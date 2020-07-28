@@ -12,10 +12,10 @@ import Zenacy.HTML.Internal.Image.Tests
 import Zenacy.HTML.Internal.Lexer.Tests
 import Zenacy.HTML.Internal.Oper.Tests
 import Zenacy.HTML.Internal.Parser.Tests
+import Zenacy.HTML.Internal.Query.Tests
 import Zenacy.HTML.Internal.Token.Tests
 import Zenacy.HTML.Internal.Trie.Tests
 import Zenacy.HTML.Internal.Zip.Tests
-import Zenacy.HTML.Query.Tests
 import Test.Framework
   ( defaultMain
   )

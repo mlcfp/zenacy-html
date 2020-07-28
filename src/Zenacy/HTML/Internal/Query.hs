@@ -10,7 +10,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
--- | A very basic query-like facility.
+-- | A basic query facility.
 module Zenacy.HTML.Internal.Query
   ( HTMLQuery
   , htmlQueryRun

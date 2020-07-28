@@ -25,7 +25,7 @@ import Text.RawString.QQ
 
 main :: IO ()
 main = do
-  putStrLn $ "data size: " ++ show (S.length (htmlBuild 100000) `div` 1024) ++ "KB"
+  putStrLn $ "data size: " ++ show (S.length (htmlBuild 1000) `div` 1024) ++ "KB"
   defaultMain
     [ env setupEnv $ \ ~x -> bgroup "a"
       [ bench "1" $ whnf countTokens x
@@ -33,7 +33,7 @@ main = do
     ]
 
 setupEnv = do
-  pure $ htmlBuild 100000
+  pure $ htmlBuild 1000
 
 countTokens :: ByteString -> Int
 countTokens s =

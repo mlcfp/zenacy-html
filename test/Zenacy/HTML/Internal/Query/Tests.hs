@@ -4,12 +4,11 @@
 
 {-# LANGUAGE OverloadedStrings #-}
 
-module Zenacy.HTML.Query.Tests
+module Zenacy.HTML.Internal.Query.Tests
   ( testQuery
   ) where
 
 import Zenacy.HTML
-import qualified Zenacy.HTML.Query as Q
 import Data.Maybe
   ( fromJust
   )
@@ -27,7 +26,7 @@ import Test.HUnit
   )
 
 testQuery :: Test
-testQuery = testGroup "Zenacy.HTML.Query"
+testQuery = testGroup "Zenacy.HTML.Internal.Query"
   [ testFirst
   , testLast
   , testNext
@@ -55,113 +54,125 @@ b = fromJust $ htmlDocBody h
 testFirst :: Test
 testFirst = testCase "query first" $ do
   assertEqual "TEST 1" (Just True) $
-    Q.run b $ Q.first >> Q.name "h1" >> Q.succ True
+    htmlQueryRun b $ htmlQueryFirst >> htmlQueryName "h1" >> htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    Q.run b $ Q.first >> Q.first >> Q.succ True
+    htmlQueryRun b $ htmlQueryFirst >> htmlQueryFirst >> htmlQuerySucc True
 
 testLast :: Test
 testLast = testCase "query last" $ do
   assertEqual "TEST 1" (Just True) $
-    Q.run b $ Q.last >> Q.name "p" >> Q.succ True
+    htmlQueryRun b $ htmlQueryLast >> htmlQueryName "p" >> htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    Q.run b $ Q.first >> Q.last >> Q.succ True
+    htmlQueryRun b $ htmlQueryFirst >> htmlQueryLast >> htmlQuerySucc True
 
 testNext :: Test
 testNext = testCase "query next" $ do
   assertEqual "TEST 1" (Nothing) $
-    Q.run b $ Q.next >> Q.succ True
+    htmlQueryRun b $ htmlQueryNext >> htmlQuerySucc True
 
 testPrev :: Test
 testPrev = testCase "query prev" $ do
   assertEqual "TEST 1" (Nothing) $
-    Q.run b $ Q.prev >> Q.succ True
+    htmlQueryRun b $ htmlQueryPrev >> htmlQuerySucc True
 
 testUp :: Test
 testUp = testCase "query up" $ do
   assertEqual "TEST 1" (Just True) $
-    Q.run b $ Q.last >> Q.last >> Q.name "img"
-      >> Q.up >> Q.name "p" >> Q.up >> Q.name "body"
-      >> Q.succ True
+    htmlQueryRun b $ htmlQueryLast >> htmlQueryLast >> htmlQueryName "img"
+      >> htmlQueryUp >> htmlQueryName "p" >> htmlQueryUp >> htmlQueryName "body"
+      >> htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    Q.run b $ Q.up >> Q.succ True
+    htmlQueryRun b $ htmlQueryUp >> htmlQuerySucc True
 
 testIsFirst :: Test
 testIsFirst = testCase "query isfirst" $ do
   assertEqual "TEST 1" (Just True) $
-    Q.run b $ Q.isFirst >> Q.succ True
+    htmlQueryRun b $ htmlQueryIsFirst >> htmlQuerySucc True
 
 testIsLast :: Test
 testIsLast = testCase "query islast" $ do
   assertEqual "TEST 1" (Just True) $
-    Q.run b $ Q.isLast >> Q.succ True
+    htmlQueryRun b $ htmlQueryIsLast >> htmlQuerySucc True
 
 testSave :: Test
 testSave = testCase "query save" $ do
   assertEqual "TEST 1" (Just "body") $
-    Q.run b $ Q.save 4 >> Q.get 4 >>= \a -> Q.succ $ htmlElemName a
+    htmlQueryRun b $ htmlQuerySave 4 >> htmlQueryGet 4 >>= \a -> htmlQuerySucc $ htmlElemName a
 
 testNode :: Test
 testNode = testCase "query node" $ do
   assertEqual "TEST 1" (Just True) $
-    Q.run b $ Q.node >>= Q.succ . htmlElemHasName "body"
+    htmlQueryRun b $ htmlQueryNode >>= htmlQuerySucc . htmlElemHasName "body"
 
 testName :: Test
 testName = testCase "query name" $ do
   assertEqual "TEST 1" (Just True) $
-    Q.run b $ Q.name "body" >> Q.succ True
+    htmlQueryRun b $ htmlQueryName "body" >> htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    Q.run b $ Q.name "x" >> Q.succ True
+    htmlQueryRun b $ htmlQueryName "x" >> htmlQuerySucc True
 
 testAttr :: Test
 testAttr = testCase "query attr" $ do
   assertEqual "TEST 1" (Just True) $
-    Q.run b $ Q.last >> Q.first >> Q.next >> Q.attr "id" >> Q.succ True
+    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryAttr "id" >> htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    Q.run b $ Q.attr "x" >> Q.succ True
+    htmlQueryRun b $ htmlQueryAttr "x" >> htmlQuerySucc True
 
 testAttrVal :: Test
 testAttrVal = testCase "query attr val" $ do
   assertEqual "TEST 1" (Just True) $
-    Q.run b $ Q.last >> Q.first >> Q.next >> Q.attrVal "id" "x" >> Q.succ True
+    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryAttrVal "id" "x" >> htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    Q.run b $ Q.last >> Q.first >> Q.next >> Q.attrVal "id" "0" >> Q.succ True
+    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryAttrVal "id" "0" >> htmlQuerySucc True
 
 testId :: Test
 testId = testCase "query id" $ do
   assertEqual "TEST 1" (Just True) $
-    Q.run b $ Q.last >> Q.first >> Q.next >> Q.id "x" >> Q.succ True
+    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryId "x" >> htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    Q.run b $ Q.last >> Q.first >> Q.next >> Q.id "0" >> Q.succ True
+    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryId "0" >> htmlQuerySucc True
 
 testClass :: Test
 testClass = testCase "query class" $ do
   assertEqual "TEST 1" (Just True) $
-    Q.run b $ Q.last >> Q.first >> Q.next >> Q.hasClass "z" >> Q.succ True
+    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryHasClass "z" >> htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    Q.run b $ Q.last >> Q.first >> Q.next >> Q.hasClass "0" >> Q.succ True
+    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryHasClass "0" >> htmlQuerySucc True
 
 testGeneral :: Test
 testGeneral = testCase "query general" $ do
   assertEqual "TEST 4" (Just "h1") $
-    Q.run b $ do
-      Q.name "body"
-      Q.first
-      Q.name "h1"
-      Q.save 1
-      Q.next
-      Q.name "p"
-      Q.isLast
-      a <- Q.get 1
-      Q.succ $ htmlElemName a
+    htmlQueryRun b $ do
+      htmlQueryName "body"
+      htmlQueryFirst
+      htmlQueryName "h1"
+      htmlQuerySave 1
+      htmlQueryNext
+      htmlQueryName "p"
+      htmlQueryIsLast
+      a <- htmlQueryGet 1
+      htmlQuerySucc $ htmlElemName a
 
 testOnly :: Test
 testOnly = testCase "query only" $ do
   assertEqual "TEST 1" (Just True) $
-    Q.run a $ Q.first >> Q.next >> Q.only "span" >> Q.only "a" >> Q.succ True
+    htmlQueryRun a $ do
+      htmlQueryFirst
+      htmlQueryNext
+      htmlQueryOnly "span"
+      htmlQueryOnly "a"
+      htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    Q.run a $ Q.first >> Q.next >> Q.only "a" >> Q.only "a" >> Q.succ True
+    htmlQueryRun a $ do
+      htmlQueryFirst
+      htmlQueryNext
+      htmlQueryOnly "a"
+      htmlQueryOnly "a"
+      htmlQuerySucc True
   assertEqual "TEST 3" (Nothing) $
-    Q.run a $ Q.only "h1" >> Q.succ True
+    htmlQueryRun a $ do
+      htmlQueryOnly "h1"
+      htmlQuerySucc True
   where
     a = fromJust $ htmlDocBody $ htmlParseEasy
       "<h1></h1><p><span><a></a></span></p>"

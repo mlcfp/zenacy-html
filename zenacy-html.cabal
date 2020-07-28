@@ -56,7 +56,6 @@ library
     , Zenacy.HTML.Internal.Trie
     , Zenacy.HTML.Internal.Types
     , Zenacy.HTML.Internal.Zip
-    , Zenacy.HTML.Query
   build-depends:
     base == 4.*
     , bytestring
@@ -73,8 +72,7 @@ library
     , vector
     , word8
   ghc-options:
-    -- -O3 -Wall
-    -O3
+    -O3 -Wall
   default-extensions:
   default-language:
     Haskell2010
@@ -86,7 +84,7 @@ executable zenacy-html-exe
     Main.hs
   other-modules:
   ghc-options:
-    -O3 -threaded -rtsopts -with-rtsopts=-N
+    -O3 -Wall -threaded -rtsopts -with-rtsopts=-N
   build-depends:
     base == 4.*
     , bytestring
@@ -127,7 +125,7 @@ test-suite zenacy-html-test
     , zenacy-html
   default-extensions:
   ghc-options:
-    -O3 -threaded -rtsopts -with-rtsopts=-N
+    -O3 -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language:
     Haskell2010
   other-modules:
@@ -138,10 +136,10 @@ test-suite zenacy-html-test
     , Zenacy.HTML.Internal.Lexer.Tests
     , Zenacy.HTML.Internal.Oper.Tests
     , Zenacy.HTML.Internal.Parser.Tests
+    , Zenacy.HTML.Internal.Query.Tests
     , Zenacy.HTML.Internal.Token.Tests
     , Zenacy.HTML.Internal.Trie.Tests
     , Zenacy.HTML.Internal.Zip.Tests
-    , Zenacy.HTML.Query.Tests
     , Samples
 
 benchmark zenacy-html-bench
@@ -164,7 +162,7 @@ benchmark zenacy-html-bench
     , zenacy-html
   default-extensions:
   ghc-options:
-    -O3 -threaded -rtsopts -with-rtsopts=-N
+    -O3 -Wall -threaded -rtsopts -with-rtsopts=-N
   default-language:
     Haskell2010
   other-modules:
