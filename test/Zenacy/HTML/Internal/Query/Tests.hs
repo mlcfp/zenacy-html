@@ -54,9 +54,15 @@ b = fromJust $ htmlDocBody h
 testFirst :: Test
 testFirst = testCase "query first" $ do
   assertEqual "TEST 1" (Just True) $
-    htmlQueryRun b $ htmlQueryFirst >> htmlQueryName "h1" >> htmlQuerySucc True
+    htmlQueryRun b $ do
+      htmlQueryFirst
+      htmlQueryName "h1"
+      htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    htmlQueryRun b $ htmlQueryFirst >> htmlQueryFirst >> htmlQuerySucc True
+    htmlQueryRun b $ do
+      htmlQueryFirst
+      htmlQueryFirst
+      htmlQuerySucc True
 
 testLast :: Test
 testLast = testCase "query last" $ do
