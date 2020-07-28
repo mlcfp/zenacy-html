@@ -30,12 +30,8 @@ module Zenacy.HTML.Internal.Image
   ) where
 
 import Zenacy.HTML.Internal.Core
-import Zenacy.HTML.Internal.HTML
 import Control.Applicative
   ( (<|>)
-  )
-import Data.IntMap
-  ( IntMap
   )
 import qualified Data.IntMap as IntMap
   ( findMax
@@ -45,9 +41,6 @@ import qualified Data.IntMap as IntMap
 import Data.Maybe
   ( catMaybes
   , fromJust
-  )
-import Data.Monoid
-  ( (<>)
   )
 import Data.Text
   ( Text
