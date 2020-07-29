@@ -38,9 +38,6 @@ import Data.STRef
   , readSTRef
   , writeSTRef
   )
-import Data.DList
-  ( DList
-  )
 import qualified Data.DList as D
   ( empty
   , snoc

@@ -29,7 +29,6 @@ import Data.Text
 import qualified Data.Text as T
   ( breakOn
   , drop
-  , empty
   , length
   , null
   , replicate
@@ -37,10 +36,10 @@ import qualified Data.Text as T
   , unpack
   )
 import Control.Monad.ST
-  ( ST(..)
+  ( ST
   )
 import Data.STRef
-  ( STRef(..)
+  ( STRef
   , readSTRef
   , writeSTRef
   )

@@ -73,6 +73,12 @@ library
     , word8
   ghc-options:
     -O3 -Wall
+    -Wno-name-shadowing
+    -Wno-unused-matches
+    -Wno-unused-local-binds
+    -Wno-unused-imports
+    -Wno-unused-top-binds
+    -Wno-incomplete-patterns
   default-extensions:
   default-language:
     Haskell2010
@@ -84,7 +90,14 @@ executable zenacy-html-exe
     Main.hs
   other-modules:
   ghc-options:
-    -O3 -Wall -threaded -rtsopts -with-rtsopts=-N
+    -O3 -Wall
+    -Wno-name-shadowing
+    -Wno-unused-matches
+    -Wno-unused-local-binds
+    -Wno-unused-imports
+    -Wno-unused-top-binds
+    -Wno-incomplete-patterns
+    -threaded -rtsopts -with-rtsopts=-N
   build-depends:
     base == 4.*
     , bytestring
@@ -125,7 +138,7 @@ test-suite zenacy-html-test
     , zenacy-html
   default-extensions:
   ghc-options:
-    -O3 -Wall -threaded -rtsopts -with-rtsopts=-N
+    -O3 -threaded -rtsopts -with-rtsopts=-N
   default-language:
     Haskell2010
   other-modules:
@@ -162,7 +175,7 @@ benchmark zenacy-html-bench
     , zenacy-html
   default-extensions:
   ghc-options:
-    -O3 -Wall -threaded -rtsopts -with-rtsopts=-N
+    -O3 -threaded -rtsopts -with-rtsopts=-N
   default-language:
     Haskell2010
   other-modules:

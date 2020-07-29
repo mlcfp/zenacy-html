@@ -120,30 +120,67 @@ testName = testCase "query name" $ do
 testAttr :: Test
 testAttr = testCase "query attr" $ do
   assertEqual "TEST 1" (Just True) $
-    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryAttr "id" >> htmlQuerySucc True
+    htmlQueryRun b $ do
+      htmlQueryLast
+      htmlQueryFirst
+      htmlQueryNext
+      htmlQueryAttr "id"
+      htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    htmlQueryRun b $ htmlQueryAttr "x" >> htmlQuerySucc True
+    htmlQueryRun b $ do
+      htmlQueryAttr "x"
+      htmlQuerySucc True
 
 testAttrVal :: Test
 testAttrVal = testCase "query attr val" $ do
   assertEqual "TEST 1" (Just True) $
-    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryAttrVal "id" "x" >> htmlQuerySucc True
+    htmlQueryRun b $ do
+      htmlQueryLast
+      htmlQueryFirst
+      htmlQueryNext
+      htmlQueryAttrVal "id" "x"
+      htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryAttrVal "id" "0" >> htmlQuerySucc True
+    htmlQueryRun b $ do
+      htmlQueryLast
+      htmlQueryFirst
+      htmlQueryNext
+      htmlQueryAttrVal "id" "0"
+      htmlQuerySucc True
 
 testId :: Test
 testId = testCase "query id" $ do
   assertEqual "TEST 1" (Just True) $
-    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryId "x" >> htmlQuerySucc True
+    htmlQueryRun b $ do
+      htmlQueryLast
+      htmlQueryFirst
+      htmlQueryNext
+      htmlQueryId "x"
+      htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryId "0" >> htmlQuerySucc True
+    htmlQueryRun b $ do
+      htmlQueryLast
+      htmlQueryFirst
+      htmlQueryNext
+      htmlQueryId "0"
+      htmlQuerySucc True
 
 testClass :: Test
 testClass = testCase "query class" $ do
   assertEqual "TEST 1" (Just True) $
-    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryHasClass "z" >> htmlQuerySucc True
+    htmlQueryRun b $ do
+      htmlQueryLast
+      htmlQueryFirst
+      htmlQueryNext
+      htmlQueryHasClass "z"
+      htmlQuerySucc True
   assertEqual "TEST 2" (Nothing) $
-    htmlQueryRun b $ htmlQueryLast >> htmlQueryFirst >> htmlQueryNext >> htmlQueryHasClass "0" >> htmlQuerySucc True
+    htmlQueryRun b $ do
+      htmlQueryLast
+      htmlQueryFirst
+      htmlQueryNext
+      htmlQueryHasClass "0"
+      htmlQuerySucc True
 
 testGeneral :: Test
 testGeneral = testCase "query general" $ do

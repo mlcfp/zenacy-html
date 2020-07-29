@@ -45,7 +45,7 @@ import Control.Monad.Extra
   , unlessM
   )
 import Control.Monad.ST
-  ( ST(..)
+  ( ST
   , runST
   )
 import Data.Default
@@ -107,7 +107,7 @@ import qualified Data.Set as Set
   , unions
   )
 import Data.STRef
-  ( STRef(..)
+  ( STRef
   , newSTRef
   , readSTRef
   , writeSTRef
@@ -893,7 +893,7 @@ activeFormatAddElement p @ Parser {..} t x = do
   a <- activeFormatList p
   let match (ParserFormatElement y _) = domMatch d x y
       b = takeWhile (not . formatItemIsMarker) a
-      n = foldr (\i z -> z + if match i then 1 else 0) 0 b
+      n = (foldr (\i z -> z + if match i then 1 else 0) 0 b) :: Int
       a' = if n < 3 then a else removeFirst match a
       e' = ParserFormatElement x t : a'
   wref parserActiveFormatList e'

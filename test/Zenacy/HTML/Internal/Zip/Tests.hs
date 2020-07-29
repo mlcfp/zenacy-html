@@ -13,7 +13,7 @@ import Control.Monad
   ( (>=>)
   )
 import Control.Monad.Writer
-  ( Writer(..)
+  ( Writer
   , execWriter
   , tell
   )
@@ -69,11 +69,19 @@ testZip = testGroup "Zenacy.HTML.Internal.Zip"
   , testIterModify
   ]
 
+h :: HTMLNode
 h = htmlParseEasy "<h1></h1><p><a href='bbb'>AAA</a><span></span><br><img></p>"
 
+z :: HTMLZipper
 z = htmlZip h
+
+f :: Text -> HTMLZipper -> Maybe HTMLZipper
 f x = htmlZipFind $ htmlElemHasName x
+
+n :: HTMLZipper -> Text
 n = htmlElementName . htmlZipNode
+
+g :: HTMLZipper -> Maybe Text
 g = Just . n
 
 testFind :: Test
@@ -227,12 +235,10 @@ testStep = testCase "zip step" $ do
      "img","br","span","a","h1","head"]
     $ w htmlZipStepBack
   where
-    w h = execWriter $ f h z
-    f :: (HTMLZipper -> Maybe HTMLZipper)
-      -> HTMLZipper
-      -> Writer [Text] HTMLZipper
-    f h z = case h z of
-      Nothing -> return z
+    w h' = execWriter $ f h' z
+    f :: (HTMLZipper -> Maybe HTMLZipper) -> HTMLZipper -> Writer [Text] HTMLZipper
+    f h z' = case h z' of
+      Nothing -> return z'
       Just x -> tell [n x] >> f h x
     z = htmlZip $ htmlParseEasy $ T.concat
         [ "<h1></h1>"
@@ -462,11 +468,11 @@ testPathFind = testCase "zip path find" $ do
 testTest :: Test
 testTest = testCase "zip test" $ do
   assertEqual "TEST 1" (Just True)
-    ((name "body" >=> frst >=> name "h1" >=> next >=> name "p" >=> tlst >=> succ) z)
+    ((name "body" >=> frst >=> name "h1" >=> next >=> name "p" >=> tlst >=> s) z')
   assertEqual "TEST 2" (Nothing)
-    ((name "body" >=> frst >=> name "h1" >=> next >=> name "a" >=> tlst >=> succ) z)
+    ((name "body" >=> frst >=> name "h1" >=> next >=> name "a" >=> tlst >=> s) z')
   assertEqual "TEST 3" (Nothing)
-    ((name "body" >=> frst >=> name "h1" >=> next >=> name "p" >=> tfst >=> succ) z)
+    ((name "body" >=> frst >=> name "h1" >=> next >=> name "p" >=> tfst >=> s) z')
   assertEqual "TEST 4" (Just "h1") $
     htmlZipM b >>=
     htmlZipTestName "body" >>=
@@ -478,25 +484,24 @@ testTest = testCase "zip test" $ do
     pure (htmlElemName $ htmlZipNode n0)
   where
     b = fromJust $ htmlDocBody h
-    z = htmlZip b
+    z' = htmlZip b
     frst = htmlZipFirst
     next = htmlZipNext
-    test = htmlZipTest
     tfst = htmlZipTestFirst
     tlst = htmlZipTestLast
     name = htmlZipTestName
-    succ = const $ pure True
+    s = const $ pure True
 
 testIterModify :: Test
 testIterModify = testCase "zip iter modify" $ do
-  assertEqual "TEST 1" n (f b)
+  assertEqual "TEST 1" n' (f' b')
   where
-    b = fromJust $ htmlDocBody h
-    n = "newname"
-    f = ( htmlElemName
+    b' = fromJust $ htmlDocBody h
+    n' = "newname"
+    f' = ( htmlElemName
         . htmlUnzip
         . htmlIterZipper
-        . htmlIterModify (htmlZipModify (htmlElemRename n))
+        . htmlIterModify (htmlZipModify (htmlElemRename n'))
         . htmlIter
         . htmlZip
         )

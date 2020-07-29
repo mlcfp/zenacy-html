@@ -60,9 +60,6 @@ import qualified Data.Text as Text
 import qualified Data.Text.Encoding as Text
   ( encodeUtf8
   )
-import Data.Word
-  ( Word8
-  )
 import Data.Word8
 
 -- | Converts a character to a Word8.

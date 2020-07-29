@@ -31,6 +31,7 @@ import Zenacy.HTML.Internal.Entity
 import Zenacy.HTML.Internal.Token
 import Control.Monad
   ( forM
+  , forM_
   , mapM
   , when
   )
@@ -39,10 +40,10 @@ import Control.Monad.Extra
   , whenJust
   )
 import Control.Monad.ST
-  ( ST(..)
+  ( ST
   )
 import Data.STRef
-  ( STRef(..)
+  ( STRef
   , newSTRef
   )
 import Data.DList
@@ -1498,7 +1499,7 @@ doMarkupDeclarationOpen x @ Lexer {..} = do
             else do
               parseError x "cdata-in-html-content"
               tokenCommentInit lexerToken
-              mapM (flip tokenCommentAppend lexerToken)
+              mapM_ (flip tokenCommentAppend lexerToken)
                 [ 0x5B, 0x43, 0x44, 0x41, 0x54, 0x41, 0x5B ]
               doBogusComment x
      | otherwise -> do
@@ -2148,7 +2149,7 @@ doNamedCharacterReference x @ Lexer {..} = do
   case entityMatch (bsDrop o lexerData) of
     Just (p, v, _) -> do
       skipWord x $ bsLen p
-      forM (bsUnpack p) $
+      forM_ (bsUnpack p) $
         flip bufferAppend lexerBuffer
       attr <- consumingAttibute x
       semi <- pure $ bsLast p == Just chrSemicolon
@@ -2162,7 +2163,7 @@ doNamedCharacterReference x @ Lexer {..} = do
              when (not semi) $
                parseError x "missing-semicolon-after-character-reference"
              bufferReset lexerBuffer
-             forM (bsUnpack v) $
+             forM_ (bsUnpack v) $
                flip bufferAppend lexerBuffer
              flushCodePoints x
              returnState x
@@ -2281,7 +2282,7 @@ doNumericCharacterReferenceEnd x @ Lexer {..} = do
      | otherwise ->
          pure ()
   bufferReset lexerBuffer
-  forM (chrUTF8 c) $ flip bufferAppend lexerBuffer
+  forM_ (chrUTF8 c) $ flip bufferAppend lexerBuffer
   flushCodePoints x
   returnState x
 
