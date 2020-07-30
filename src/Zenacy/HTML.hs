@@ -14,14 +14,17 @@ module Zenacy.HTML
   -- * Introduction
   -- $intro
 
-  -- * Hello, World
-  -- $example
+  -- * Parsing
+  -- $parse
 
   -- * Rewriting
   -- $rewrite
 
   -- * Extraction
   -- $extract
+
+  -- * Queries
+  -- $query
 
   -- * Samples
   -- $samples
@@ -33,6 +36,7 @@ module Zenacy.HTML
   ) where
 
 import Zenacy.HTML.Internal.HTML as X
+import Zenacy.HTML.Internal.Filter as X
 import Zenacy.HTML.Internal.Image as X
 import Zenacy.HTML.Internal.Oper as X
 import Zenacy.HTML.Internal.Query as X
@@ -70,7 +74,7 @@ import Zenacy.HTML.Internal.Zip as X
 -- * Various functions for processing aspects of HTML
 -- * Lightweight queries for rewriting
 --
--- $example
+-- $parse
 --
 -- The library is designed to be imported unqualified.
 --
@@ -97,7 +101,7 @@ import Zenacy.HTML.Internal.Zip as X
 --
 -- The resulting rendered document appears like so.
 --
--- > "<html><head></head><body><div>HelloWorld</div></body></html>"
+-- > <html><head></head><body><div>HelloWorld</div></body></html>
 --
 -- $rewrite
 --
@@ -114,7 +118,7 @@ import Zenacy.HTML.Internal.Zip as X
 --
 -- Running the above gives the modified document.
 --
--- > "<html><head></head><body><div>Hello</div><div>World</div></body></html>"
+-- > <html><head></head><body><div>Hello</div><div>World</div></body></html>
 --
 -- $extract
 --
@@ -147,6 +151,49 @@ import Zenacy.HTML.Internal.Zip as X
 -- > , "https://example2.com"
 -- > ]
 --
+-- $query
+--
+-- The library includes a basic query facility implemented as a thin wrapper
+-- around an `HTMLZipper`.  Queries match patterns in HTML structures and can
+-- be used to extract information or update documents.  As a first example,
+-- consider the following HTML.
+--
+-- > <p>
+-- >   <span id="x" class="y z"></span>
+-- >   <br>
+-- >   <a href="bbb">AAA</a>
+-- >   <img>
+-- > </p>
+--
+-- The HTML can be parsed as normal.  Note though the additional step of
+-- whitespace removal, which is often important in documents that include
+-- indentation such as above.
+--
+-- > fromJust . htmlSpaceRemove . fromJust . htmlDocBody . htmlParseEasy
+--
+-- Now a query function can be defined.  This function expects to be given
+-- a @body@ element whose first child is a @p@ element whose first child
+-- has an id of @x@ whose second sibling is an anchor element.  If all of
+-- those conditions are met, the the text contents of the anchor is returned.
+--
+-- > query :: HTMLNode -> Maybe Text
+-- > query = htmlQueryExec $ do
+-- >   htmlQueryName "body"
+-- >   htmlQueryFirst
+-- >   htmlQueryName "p"
+-- >   htmlQueryFirst
+-- >   htmlQueryId "x"
+-- >   htmlQueryNext
+-- >   htmlQueryNext
+-- >   htmlQueryName "a"
+-- >   a <- htmlQueryNode
+-- >   htmlQuerySucc $
+-- >     fromMaybe "" $ htmlElemText a
+--
+-- Running the query on the parsed document will give the result.
+--
+-- > Just "AAA"
+--
 -- $samples
 --
 -- The unit tests include the above samples as well as many other example
@@ -156,9 +203,9 @@ import Zenacy.HTML.Internal.Zip as X
 --
 -- Zenacy HTML was originally developed for Zenacy Reader Technologies LLC
 -- starting around 2015 and used in a web reading SaaS for a few years.
--- The need to understand and handle
--- the wide variety and sublties of HTML found on the web lead to the development
--- of library that closely followed the standard.  The library was tweaked and
--- optimized a bit and though there is room for more improvements the result
--- worked quite well in production (a lot of credit goes to the GHC team and Haskell
--- community for providing such great, fast functional programming tools).
+-- The need to understand and handle the wide variety and sublties of HTML
+-- found on the web lead to the development of library that closely followed
+-- the standard.  The library was tweaked and optimized a bit and though
+-- there is room for more improvements the result worked quite well in
+-- production (a lot of credit goes to the GHC team and Haskell community
+-- for providing such great, fast functional programming tools).

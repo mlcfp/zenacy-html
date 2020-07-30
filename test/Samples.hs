@@ -28,6 +28,7 @@ import Test.HUnit
   )
 import Data.Maybe
   ( fromJust
+  , fromMaybe
   )
 import Data.Text
   ( Text
@@ -42,6 +43,7 @@ testSamples = testGroup "Samples"
   [ testHello
   , testRewrite
   , testExtract
+  , testQuery
   ]
 
 testHello :: Test
@@ -126,3 +128,35 @@ extract = go . htmlParseEasy
         concatMap go c
       _otherwise ->
         []
+
+testQuery :: Test
+testQuery = testCase "sample query" $ do
+  assertEqual "Sample 1" (Just "AAA") $ query (b h)
+  where
+    h = [r|
+      <p>
+        <span id="x" class="y z"></span>
+        <br>
+        <a href="bbb">AAA</a>
+        <img>
+      </p>
+      |]
+    b = fromJust
+      . htmlSpaceRemove
+      . fromJust
+      . htmlDocBody
+      . htmlParseEasy 
+
+query :: HTMLNode -> Maybe Text
+query = htmlQueryExec $ do
+  htmlQueryName "body"
+  htmlQueryFirst
+  htmlQueryName "p"
+  htmlQueryFirst
+  htmlQueryId "x"
+  htmlQueryNext
+  htmlQueryNext
+  htmlQueryName "a"
+  a <- htmlQueryNode
+  htmlQuerySucc $
+    fromMaybe "" $ htmlElemText a

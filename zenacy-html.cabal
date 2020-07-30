@@ -45,6 +45,7 @@ library
     , Zenacy.HTML.Internal.Core
     , Zenacy.HTML.Internal.DOM
     , Zenacy.HTML.Internal.Entity
+    , Zenacy.HTML.Internal.Filter
     , Zenacy.HTML.Internal.HTML
     , Zenacy.HTML.Internal.Image
     , Zenacy.HTML.Internal.Lexer
