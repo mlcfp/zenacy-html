@@ -44,6 +44,7 @@ testSamples = testGroup "Samples"
   , testRewrite
   , testExtract
   , testQuery
+  , testQuery2
   ]
 
 testHello :: Test
@@ -160,3 +161,33 @@ query = htmlQueryExec $ do
   a <- htmlQueryNode
   htmlQuerySucc $
     fromMaybe "" $ htmlElemText a
+
+testQuery2 = testCase "sample query2" $ do
+  assertEqual "Sample 1" (htmlRender h') $
+    htmlRender $ htmlMapElem query2 h
+  where
+    h = b [r|
+      <section><div><img src="aaa"></div></section>
+      <section><div><img src="bbb"></div></section>
+      <section><div><img src="ccc"></div></section>
+      |]
+    h' = b [r|
+      <section><a href="aaa">aaa</a></section>
+      <section><a href="bbb">bbb</a></section>
+      <section><a href="ccc">ccc</a></section>
+      |]
+    b = fromJust
+      . htmlSpaceRemove
+      . fromJust
+      . htmlDocBody
+      . htmlParseEasy 
+
+query2 :: HTMLNode -> HTMLNode
+query2 = htmlQueryTry $ do
+  htmlQueryName "div"
+  htmlQueryOnly "img"
+  a <- htmlQueryNode
+  let Just b = htmlElemGetAttr "src" a
+  htmlQuerySucc $
+    htmlElem "a" [ htmlAttr "href" b ]
+      [ htmlText b ]

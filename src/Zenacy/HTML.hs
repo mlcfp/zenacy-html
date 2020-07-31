@@ -194,6 +194,37 @@ import Zenacy.HTML.Internal.Zip as X
 --
 -- > Just "AAA"
 --
+-- Queries can also be used to modifiy documents.  In the next example, let's
+-- say we would like to find any @img@ that is the only content in a @div@ and
+-- replace the @div@ with a link.  The document could look as follows.
+-- 
+-- > <section><div><img src="aaa"></div></section>
+-- > <section><div><img src="bbb"></div></section>
+-- > <section><div><img src="ccc"></div></section>
+--
+-- A query function can be defined to match the desired pattern and return the
+-- modified element.
+--
+-- > query2 :: HTMLNode -> HTMLNode
+-- > query2 = htmlQueryTry $ do
+-- >   htmlQueryName "div"
+-- >   htmlQueryOnly "img"
+-- >   a <- htmlQueryNode
+-- >   let Just b = htmlElemGetAttr "src" a
+-- >   htmlQuerySucc $
+-- >     htmlElem "a" [ htmlAttr "href" b ]
+-- >       [ htmlText b ]
+--
+-- The query can then be applied to the entire document using `htmlMapElem`.
+--
+-- > htmlMapElem query2
+--
+-- Rendering the mapped query with give the updated content.
+--
+-- > <section><a href="aaa">aaa</a></section>
+-- > <section><a href="bbb">bbb</a></section>
+-- > <section><a href="ccc">ccc</a></section>
+--
 -- $samples
 --
 -- The unit tests include the above samples as well as many other example
