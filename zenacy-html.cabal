@@ -13,7 +13,7 @@ description:
   many processing features to help extract information from web pages or
   rewrite them and render the modified results.
 homepage:
-  http://zenacy.app/
+  https://github.com/mlcfp/zenacy-html
 license:
   MIT
 license-file:
