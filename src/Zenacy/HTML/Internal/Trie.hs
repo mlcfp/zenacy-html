@@ -1,7 +1,3 @@
---------------------------------------------------------------------------------
--- Copyright (C) 2016 Zenacy Reader Technologies LLC
---------------------------------------------------------------------------------
-
 -- | A basic trie over byte strings.
 module Zenacy.HTML.Internal.Trie
   ( Trie

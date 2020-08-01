@@ -1,7 +1,3 @@
---------------------------------------------------------------------------------
--- Copyright (C) 2016 Zenacy Reader Technologies LLC
---------------------------------------------------------------------------------
-
 -- | Zenacy HTML is an HTML parsing and processing library that implements the
 -- WHATWG HTML parsing standard.  The standard is described as a state machine
 -- that this library implements exactly as spelled out including all the error

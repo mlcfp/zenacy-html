@@ -1,7 +1,3 @@
---------------------------------------------------------------------------------
--- Copyright (C) 2016 Zenacy Reader Technologies LLC
---------------------------------------------------------------------------------
-
 {-# LANGUAGE OverloadedStrings #-}
 
 module Zenacy.HTML.Internal.Trie.Tests

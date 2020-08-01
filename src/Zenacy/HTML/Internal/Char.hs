@@ -1,7 +1,3 @@
---------------------------------------------------------------------------------
--- Copyright (C) 2016 Zenacy Reader Technologies LLC
---------------------------------------------------------------------------------
-
 -- | Functions for identifying and manipulating character codes.
 module Zenacy.HTML.Internal.Char
   ( ctow
