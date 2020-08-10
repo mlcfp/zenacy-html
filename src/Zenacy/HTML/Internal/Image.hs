@@ -38,6 +38,9 @@ import Data.Maybe
   ( catMaybes
   , fromJust
   )
+import Data.Monoid
+  ( (<>)
+  )
 import Data.Text
   ( Text
   )
