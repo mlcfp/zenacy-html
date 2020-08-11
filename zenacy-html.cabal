@@ -33,6 +33,10 @@ build-type:
 extra-source-files:
   README.md CHANGES.md
 
+source-repository head
+  type:     git
+  location: https://github.com/mlcfp/zenacy-html.git
+
 library
   hs-source-dirs:
     src
