@@ -1,8 +1,7 @@
 cabal-version: >= 1.10
+version: 2.0.1
 name:
   zenacy-html
-version:
-  2.0.0
 synopsis:
   A standard compliant HTML parsing library
 description:
