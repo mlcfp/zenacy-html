@@ -81,34 +81,34 @@ data HTMLError = HTMLError
 
 -- | Defines the model type for an HTML document.
 data HTMLNode
-  = HTMLDocument                                -- ^ A document node.
+  = HTMLDocument
     { htmlDocumentName       :: !Text           -- ^ The document name.
     , htmlDocumentChildren   :: ![HTMLNode]     -- ^ The document children.
     }
-  | HTMLDoctype                                 -- ^ A DOCTYPE node.
+  | HTMLDoctype
     { htmlDoctypeName        :: !Text           -- ^ The DOCTYPE name.
     , htmlDoctypePublicID    :: !(Maybe Text)   -- ^ The public ID.
     , htmlDoctypeSystemID    :: !(Maybe Text)   -- ^ The system ID.
     }
-  | HTMLFragment                                -- ^ A fragment node.
+  | HTMLFragment
     { htmlFragmentName       :: !Text           -- ^ The fragment name.
     , htmlFragmentChildren   :: ![HTMLNode]     -- ^ The fragment children.
     }
-  | HTMLElement                                 -- ^ An element node.
+  | HTMLElement
     { htmlElementName        :: !Text           -- ^ The element name.
     , htmlElementNamespace   :: !HTMLNamespace  -- ^ The element namespace.
     , htmlElementAttributes  :: ![HTMLAttr]     -- ^ The element attributes.
     , htmlElementChildren    :: ![HTMLNode]     -- ^ The element children.
     }
-  | HTMLTemplate                                -- ^ A template node.
+  | HTMLTemplate
     { htmlTemplateNamespace  :: !HTMLNamespace  -- ^ The template namespace.
     , htmlTemplateAttributes :: ![HTMLAttr]     -- ^ The template attributes.
     , htmlTemplateContents   :: !HTMLNode       -- ^ The template contents.
     }
-  | HTMLText                                    -- ^ A text node.
+  | HTMLText
     { htmlTextData           :: !Text           -- ^ The text value.
     }
-  | HTMLComment                                 -- ^ A comment node.
+  | HTMLComment
     { htmlCommentData        :: !Text           -- ^ The comment text.
     }
     deriving (Eq, Ord, Show)
