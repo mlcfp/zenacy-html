@@ -1,4 +1,8 @@
-# Zenacy HTML [![Hackage version](https://img.shields.io/hackage/v/zenacy-html.svg?label=Hackage)](https://hackage.haskell.org/package/zenacy-html) [![Stackage version](https://www.stackage.org/package/zenacy-html/badge/nightly?label=Stackage)](https://www.stackage.org/package/zenacy-html) [![Linux build status](https://img.shields.io/travis/mlcfp/zenacy-html/master.svg?label=Linux%20build)](https://travis-ci.org/mlcfp/zenacy-html)
+# Zenacy HTML
+
+[![Hackage version](https://img.shields.io/hackage/v/zenacy-html.svg?label=Hackage)](https://hackage.haskell.org/package/zenacy-html)
+[![Stackage version](https://www.stackage.org/package/zenacy-html/badge/nightly?label=Stackage)](https://www.stackage.org/package/zenacy-html)
+[![Linux build status](https://img.shields.io/travis/mlcfp/zenacy-html/master.svg?label=Linux%20build)](https://travis-ci.org/mlcfp/zenacy-html)
 
 Zenacy HTML is an HTML parsing and processing library that implements the
 WHATWG HTML parsing standard.  The standard is described as a state machine
