@@ -1,7 +1,7 @@
 # Zenacy HTML
 
-[![hackage-shield][]][hackage-build]
-[![stackage-shield][]][stackage-build]
+[![hackage-shield][]][hackage-version]
+[![stackage-shield][]][stackage-version]
 [![linux-shield][]][linux-build]
 [![packdeps-shield][]][packdeps]
 
