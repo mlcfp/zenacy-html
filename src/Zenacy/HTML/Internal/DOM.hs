@@ -447,7 +447,6 @@ domElementFindAttr node name = case node of
 seqLast :: Seq a -> Maybe a
 seqLast (Seq.viewr -> EmptyR) = Nothing
 seqLast (Seq.viewr -> _ :> a) = Just a
-seqLast _ = Nothing
 
 -- | Finds an element in a sequence.
 seqFind :: (a -> Bool) -> Seq a -> Maybe a
@@ -455,7 +454,6 @@ seqFind f x = go x
   where
     go (Seq.viewl -> EmptyL) = Nothing
     go (Seq.viewl -> a :< b) = if f a then Just a else go b
-    go _ = Nothing
 
 -- | Inserts an element into a sequence before the element satisfying a predicate.
 seqInsertBefore :: (a -> Bool) -> a -> Seq a -> Seq a
