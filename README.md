@@ -1,8 +1,9 @@
 # Zenacy HTML
 
-[![Hackage version](https://img.shields.io/hackage/v/zenacy-html.svg?label=Hackage)](https://hackage.haskell.org/package/zenacy-html)
-[![Stackage version](https://www.stackage.org/package/zenacy-html/badge/nightly?label=Stackage)](https://www.stackage.org/package/zenacy-html)
-[![Linux build status](https://img.shields.io/travis/com/mlcfp/zenacy-html?label=Linux%20build)](https://travis-ci.org/mlcfp/zenacy-html)
+[![hackage-shield][]][hackage-build]
+[![stackage-shield][]][stackage-build]
+[![linux-shield][]][linux-build]
+[![packdeps-shield][]][packdeps]
 
 Zenacy HTML is an HTML parsing and processing library that implements the
 WHATWG HTML parsing standard.  The standard is described as a state machine
@@ -243,3 +244,13 @@ the standard.  The library was tweaked and optimized a bit and though
 there is room for more improvements the result worked quite well in
 production (a lot of credit goes to the GHC team and Haskell community
 for providing such great, fast functional programming tools).
+
+[hackage-shield]: https://img.shields.io/hackage/v/zenacy-html.svg?label=Hackage
+[hackage-version]: https://hackage.haskell.org/package/zenacy-html
+[stackage-shield]: https://www.stackage.org/package/zenacy-html/badge/nightly?label=Stackage
+[stackage-version]: https://www.stackage.org/package/zenacy-html
+[linux-shield]: https://img.shields.io/travis/com/mlcfp/zenacy-html?label=Linux%20build
+[linux-build]: https://travis-ci.org/mlcfp/zenacy-html
+[packdeps-shield]: https://img.shields.io/hackage-deps/v/zenacy-html.svg?maxAge=3600
+[packdeps]: http://packdeps.haskellers.com/feed?needle=zenacy-html
+
