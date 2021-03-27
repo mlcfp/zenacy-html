@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.2
+
+* Upgrade bytestring dependency
+
 ## 2.0.1
 
 * Make version one line in cabal file to make shields work

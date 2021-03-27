@@ -2,8 +2,7 @@
 #
 #-------------------------------------------------------------------------------
 
-resolver: lts-16.5
-#resolver: nightly-2020-08-26
+resolver: lts-16.31
 
-#extra-deps:
-#  - dlist-1.0
+nix:
+  enable: true
