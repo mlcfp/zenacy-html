@@ -47,7 +47,7 @@ match t s =
         Just (w, t) ->
           case Map.lookup w m of
             Nothing -> a
-            Just b @ (Trie (Just v2) _) ->
+            Just b@(Trie (Just v2) _) ->
               go (Just (n + 1, v2)) (n + 1) b t
             Just b ->
               go a (n + 1) b t

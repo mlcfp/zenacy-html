@@ -437,7 +437,7 @@ lexerSkipNextLF Lexer{..} = wref lexerSkip LexerSkipLF
 
 -- | Gets the next token from a lexer.
 lexerNext :: Lexer s -> ST s Token
-lexerNext x @ Lexer {..} =
+lexerNext x@Lexer {..} =
   skip
   where
     skip = do
@@ -468,7 +468,7 @@ lexerNext x @ Lexer {..} =
 
 -- | Gets the next word from a lexer.
 nextWord :: Lexer s -> ST s Word8
-nextWord x @ Lexer {..} = do
+nextWord Lexer {..} = do
   offset <- rref lexerOffset
   if | offset < bsLen lexerData -> do
          wref lexerOffset (offset + 1)
@@ -478,7 +478,7 @@ nextWord x @ Lexer {..} = do
 
 -- | Gets the next word from a lexer without advancing.
 peekWord :: Lexer s -> ST s Word8
-peekWord x @ Lexer {..} = do
+peekWord Lexer {..} = do
   offset <- rref lexerOffset
   if | offset < bsLen lexerData ->
          pure $ bsIndex lexerData offset
@@ -487,54 +487,54 @@ peekWord x @ Lexer {..} = do
 
 -- | Moves the lexer back one word.
 backWord :: Lexer s -> ST s ()
-backWord x @ Lexer {..} = uref lexerOffset (subtract 1)
+backWord Lexer {..} = uref lexerOffset (subtract 1)
 
 -- | Skips the specified number of words.
 skipWord :: Lexer s -> Int -> ST s ()
-skipWord x @ Lexer {..} n = uref lexerOffset (+n)
+skipWord Lexer {..} n = uref lexerOffset (+n)
 
 -- | Gets an indexing function from the current lexer offset.
 dataIndexer :: Lexer s -> ST s (Int -> Word8)
-dataIndexer x @ Lexer {..} = do
+dataIndexer Lexer {..} = do
   offset <- rref lexerOffset
   pure $ \i -> bsIndex lexerData (offset + i)
 
 -- | Gets the remaining number of words.
 dataRemain :: Lexer s -> ST s Int
-dataRemain x @ Lexer {..} = do
+dataRemain Lexer {..} = do
   offset <- rref lexerOffset
   pure $ bsLen lexerData - offset
 
 -- | Emits the last token in the token buffer.
 emit :: Lexer s -> ST s ()
-emit x @ Lexer {..} = do
+emit Lexer {..} = do
   tokenTail lexerToken >>= flip tokenTagStartName lexerToken >>= \case
     Just a  -> wref lexerLast a
     Nothing -> pure ()
 
 -- | Emits a character token.
 emitChar :: Lexer s -> Word8 -> ST s ()
-emitChar x @ Lexer {..} w = do
+emitChar x@Lexer {..} w = do
   tokenCharInit w lexerToken
   emit x
 
 -- | Emits the characters in the buffer.
 emitBuffer :: Lexer s -> ST s ()
-emitBuffer x @ Lexer {..} = do
+emitBuffer x@Lexer {..} = do
   bufferApply (emitChar x) lexerBuffer
   bufferReset lexerBuffer
 
 -- | Sets the lexer state.
 state :: Lexer s -> LexerState -> ST s ()
-state x @ Lexer {..} = wref lexerState
+state Lexer {..} = wref lexerState
 
 -- | Sets the lexer return state.
 returnSet :: Lexer s -> LexerState -> ST s ()
-returnSet x @ Lexer {..} = wref lexerReturn
+returnSet x@Lexer {..} = wref lexerReturn
 
 -- | Gets the lexer return state.
 returnGet :: Lexer s -> ST s LexerState
-returnGet x @ Lexer {..} = rref lexerReturn
+returnGet x@Lexer {..} = rref lexerReturn
 
 -- | Switches to the return state.
 returnState :: Lexer s -> ST s ()
@@ -542,19 +542,19 @@ returnState x = returnGet x >>= flip lexerDispatch x
 
 -- | Handles parse errors.
 parseError :: Lexer s -> BS -> ST s ()
-parseError x @ Lexer {..} =
+parseError x@Lexer {..} =
   when lexerLog . (uref lexerErrors . flip D.snoc)
 
 -- | Determines if the current token is an appropriate end tag.
 appropriateEndTag :: Lexer s -> ST s Bool
-appropriateEndTag x @ Lexer {..} = do
+appropriateEndTag x@Lexer {..} = do
   tokenTail lexerToken >>= flip tokenTagEndName lexerToken >>= \case
     Just a  -> (==a) <$> rref lexerLast
     Nothing -> pure False
 
 -- | Determines if an attribute value is currently being consumed.
 consumingAttibute :: Lexer s -> ST s Bool
-consumingAttibute x @ Lexer {..} = do
+consumingAttibute x@Lexer {..} = do
   a <- returnGet x
   pure $ any (==a)
     [ StateAttrValueDoubleQuoted
@@ -564,7 +564,7 @@ consumingAttibute x @ Lexer {..} = do
 
 -- | Flushes the code points stored in the buffer.
 flushCodePoints :: Lexer s -> ST s ()
-flushCodePoints x @ Lexer {..} = do
+flushCodePoints x@Lexer {..} = do
   a <- consumingAttibute x
   if | a -> do
          bufferApply (flip tokenAttrValAppend lexerToken) lexerBuffer
@@ -574,7 +574,7 @@ flushCodePoints x @ Lexer {..} = do
 
 -- 12.2.5.1 Data state
 doData :: Lexer s -> ST s ()
-doData x @ Lexer {..} = do
+doData x@Lexer {..} = do
   c <- nextWord x
   if | c == chrAmpersand -> do
          returnSet x StateData
@@ -590,7 +590,7 @@ doData x @ Lexer {..} = do
 
 -- 12.2.5.2 RCDATA state
 doRCDATA :: Lexer s -> ST s ()
-doRCDATA x @ Lexer {..} = do
+doRCDATA x@Lexer {..} = do
   c <- nextWord x
   if | c == chrAmpersand -> do
          returnSet x StateRCDATA
@@ -606,7 +606,7 @@ doRCDATA x @ Lexer {..} = do
 
 -- 12.2.5.3 RAWTEXT state
 doRAWTEXT :: Lexer s -> ST s ()
-doRAWTEXT x @ Lexer {..} = do
+doRAWTEXT x@Lexer {..} = do
   c <- nextWord x
   if | c == chrLess -> do
          doRAWTEXTLessThan x
@@ -619,7 +619,7 @@ doRAWTEXT x @ Lexer {..} = do
 
 -- 12.2.5.4 Script data state
 doScriptData :: Lexer s -> ST s ()
-doScriptData x @ Lexer {..} = do
+doScriptData x@Lexer {..} = do
   c <- nextWord x
   if | c == chrLess -> do
          doScriptDataLessThan x
@@ -632,7 +632,7 @@ doScriptData x @ Lexer {..} = do
 
 -- 12.2.5.5 PLAINTEXT state
 doPLAINTEXT :: Lexer s -> ST s ()
-doPLAINTEXT x @ Lexer {..} = do
+doPLAINTEXT x@Lexer {..} = do
   c <- nextWord x
   if | c == chrEOF -> do
          tokenEOFInit lexerToken
@@ -643,7 +643,7 @@ doPLAINTEXT x @ Lexer {..} = do
 
 -- 12.2.5.6 Tag open state
 doTagOpen :: Lexer s -> ST s ()
-doTagOpen x @ Lexer {..} = do
+doTagOpen x@Lexer {..} = do
   c <- nextWord x
   if | c == chrExclamation -> do
          doMarkupDeclarationOpen x
@@ -670,7 +670,7 @@ doTagOpen x @ Lexer {..} = do
 
 -- 12.2.5.7 End tag open state
 doEndTagOpen :: Lexer s -> ST s ()
-doEndTagOpen x @ Lexer {..} = do
+doEndTagOpen x@Lexer {..} = do
   c <- nextWord x
   if | chrASCIIAlpha c -> do
          tokenTagEndInit lexerToken
@@ -693,7 +693,7 @@ doEndTagOpen x @ Lexer {..} = do
 
 -- 12.2.5.8 Tag name state
 doTagName :: Lexer s -> ST s ()
-doTagName x @ Lexer {..} = do
+doTagName x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -718,7 +718,7 @@ doTagName x @ Lexer {..} = do
 
 -- 12.2.5.9 RCDATA less-than sign state
 doRCDATALessThan :: Lexer s -> ST s ()
-doRCDATALessThan x @ Lexer {..} = do
+doRCDATALessThan x@Lexer {..} = do
   c <- nextWord x
   if | c == chrSolidus -> do
          bufferReset lexerBuffer
@@ -730,7 +730,7 @@ doRCDATALessThan x @ Lexer {..} = do
 
 -- 12.2.5.10 RCDATA end tag open state
 doRCDATAEndTagOpen :: Lexer s -> ST s ()
-doRCDATAEndTagOpen x @ Lexer {..} = do
+doRCDATAEndTagOpen x@Lexer {..} = do
   c <- nextWord x
   if | chrASCIIAlpha c -> do
          tokenTagEndInit lexerToken
@@ -744,7 +744,7 @@ doRCDATAEndTagOpen x @ Lexer {..} = do
 
 -- 12.2.5.11 RCDATA end tag name state
 doRCDATAEndTagName :: Lexer s -> ST s ()
-doRCDATAEndTagName x @ Lexer {..} = do
+doRCDATAEndTagName x@Lexer {..} = do
   c <- nextWord x
   a <- appropriateEndTag x
   if | c == chrTab ||
@@ -790,7 +790,7 @@ doRCDATAEndTagName x @ Lexer {..} = do
 
 -- 12.2.5.12 RAWTEXT less-than sign state
 doRAWTEXTLessThan :: Lexer s -> ST s ()
-doRAWTEXTLessThan x @ Lexer {..} = do
+doRAWTEXTLessThan x@Lexer {..} = do
   c <- nextWord x
   if | c == chrSolidus -> do
          bufferReset lexerBuffer
@@ -802,7 +802,7 @@ doRAWTEXTLessThan x @ Lexer {..} = do
 
 -- 12.2.5.13 RAWTEXT end tag open state
 doRAWTEXTEndTagOpen :: Lexer s -> ST s ()
-doRAWTEXTEndTagOpen x @ Lexer {..} = do
+doRAWTEXTEndTagOpen x@Lexer {..} = do
   c <- nextWord x
   if | chrASCIIAlpha c -> do
          tokenTagEndInit lexerToken
@@ -816,7 +816,7 @@ doRAWTEXTEndTagOpen x @ Lexer {..} = do
 
 -- 12.2.5.14 RAWTEXT end tag name state
 doRAWTEXTEndTagName :: Lexer s -> ST s ()
-doRAWTEXTEndTagName x @ Lexer {..} = do
+doRAWTEXTEndTagName x@Lexer {..} = do
   c <- nextWord x
   a <- appropriateEndTag x
   if | c == chrTab ||
@@ -862,7 +862,7 @@ doRAWTEXTEndTagName x @ Lexer {..} = do
 
 -- 12.2.5.15 Script data less-than sign state
 doScriptDataLessThan :: Lexer s -> ST s ()
-doScriptDataLessThan x @ Lexer {..} = do
+doScriptDataLessThan x@Lexer {..} = do
   c <- nextWord x
   if | c == chrSolidus -> do
          bufferReset lexerBuffer
@@ -878,7 +878,7 @@ doScriptDataLessThan x @ Lexer {..} = do
 
 -- 12.2.5.16 Script data end tag open state
 doScriptDataEndTagOpen :: Lexer s -> ST s ()
-doScriptDataEndTagOpen x @ Lexer {..} = do
+doScriptDataEndTagOpen x@Lexer {..} = do
   c <- nextWord x
   if | chrASCIIAlpha c -> do
          tokenTagEndInit lexerToken
@@ -892,7 +892,7 @@ doScriptDataEndTagOpen x @ Lexer {..} = do
 
 -- 12.2.5.17 Script data end tag name state
 doScriptDataEndTagName :: Lexer s -> ST s ()
-doScriptDataEndTagName x @ Lexer {..} = do
+doScriptDataEndTagName x@Lexer {..} = do
   c <- nextWord x
   a <- appropriateEndTag x
   if | c == chrTab ||
@@ -938,7 +938,7 @@ doScriptDataEndTagName x @ Lexer {..} = do
 
 -- 12.2.5.18 Script data escape start state
 doScriptDataEscapeStart :: Lexer s -> ST s ()
-doScriptDataEscapeStart x @ Lexer {..} = do
+doScriptDataEscapeStart x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          emitChar x chrHyphen
@@ -949,7 +949,7 @@ doScriptDataEscapeStart x @ Lexer {..} = do
 
 -- 12.2.5.19 Script data escape start dash state
 doScriptDataEscapeStartDash :: Lexer s -> ST s ()
-doScriptDataEscapeStartDash x @ Lexer {..} = do
+doScriptDataEscapeStartDash x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          emitChar x chrHyphen
@@ -960,7 +960,7 @@ doScriptDataEscapeStartDash x @ Lexer {..} = do
 
 -- 12.2.5.20 Script data escaped state
 doScriptDataEscaped :: Lexer s -> ST s ()
-doScriptDataEscaped x @ Lexer {..} = do
+doScriptDataEscaped x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          emitChar x chrHyphen
@@ -977,7 +977,7 @@ doScriptDataEscaped x @ Lexer {..} = do
 
 -- 12.2.5.21 Script data escaped dash state
 doScriptDataEscapedDash :: Lexer s -> ST s ()
-doScriptDataEscapedDash x @ Lexer {..} = do
+doScriptDataEscapedDash x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          emitChar x chrHyphen
@@ -994,7 +994,7 @@ doScriptDataEscapedDash x @ Lexer {..} = do
 
 -- 12.2.5.22 Script data escaped dash dash state
 doScriptDataEscapedDashDash :: Lexer s -> ST s ()
-doScriptDataEscapedDashDash x @ Lexer {..} = do
+doScriptDataEscapedDashDash x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          emitChar x c
@@ -1014,7 +1014,7 @@ doScriptDataEscapedDashDash x @ Lexer {..} = do
 
 -- 12.2.5.23 Script data escaped less-than sign state
 doScriptDataEscapedLessThan :: Lexer s -> ST s ()
-doScriptDataEscapedLessThan x @ Lexer {..} = do
+doScriptDataEscapedLessThan x@Lexer {..} = do
   c <- nextWord x
   if | c == chrSolidus -> do
          bufferReset lexerBuffer
@@ -1031,7 +1031,7 @@ doScriptDataEscapedLessThan x @ Lexer {..} = do
 
 -- 12.2.5.24 Script data escaped end tag open state
 doScriptDataEscapedEndTagOpen :: Lexer s -> ST s ()
-doScriptDataEscapedEndTagOpen x @ Lexer {..} = do
+doScriptDataEscapedEndTagOpen x@Lexer {..} = do
   c <- nextWord x
   if | chrASCIIAlpha c -> do
          tokenTagEndInit lexerToken
@@ -1045,7 +1045,7 @@ doScriptDataEscapedEndTagOpen x @ Lexer {..} = do
 
 -- 12.2.5.25 Script data escaped end tag name state
 doScriptDataEscapedEndTagName :: Lexer s -> ST s ()
-doScriptDataEscapedEndTagName x @ Lexer {..} = do
+doScriptDataEscapedEndTagName x@Lexer {..} = do
   c <- nextWord x
   a <- appropriateEndTag x
   if | c == chrTab ||
@@ -1092,7 +1092,7 @@ doScriptDataEscapedEndTagName x @ Lexer {..} = do
 
 -- 12.2.5.26 Script data double escape start state
 doScriptDataDoubleEscapedStart :: Lexer s -> ST s ()
-doScriptDataDoubleEscapedStart x @ Lexer {..} = do
+doScriptDataDoubleEscapedStart x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1123,7 +1123,7 @@ doScriptDataDoubleEscapedStart x @ Lexer {..} = do
 
 -- 12.2.5.27 Script data double escaped state
 doScriptDataDoubleEscaped :: Lexer s -> ST s ()
-doScriptDataDoubleEscaped x @ Lexer {..} = do
+doScriptDataDoubleEscaped x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          tokenCharInit c lexerToken
@@ -1143,7 +1143,7 @@ doScriptDataDoubleEscaped x @ Lexer {..} = do
 
 -- 12.2.5.28 Script data double escaped dash state
 doScriptDataDoubleEscapedDash :: Lexer s -> ST s ()
-doScriptDataDoubleEscapedDash x @ Lexer {..} = do
+doScriptDataDoubleEscapedDash x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          tokenCharInit c lexerToken
@@ -1164,7 +1164,7 @@ doScriptDataDoubleEscapedDash x @ Lexer {..} = do
 
 -- 12.2.5.29 Script data double escaped dash dash state
 doScriptDataDoubleEscapedDashDash :: Lexer s -> ST s ()
-doScriptDataDoubleEscapedDashDash x @ Lexer {..} = do
+doScriptDataDoubleEscapedDashDash x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          emitChar x c
@@ -1188,7 +1188,7 @@ doScriptDataDoubleEscapedDashDash x @ Lexer {..} = do
 
 -- 12.2.5.30 Script data double escaped less-than sign state
 doScriptDataDoubleEscapedLessThan :: Lexer s -> ST s ()
-doScriptDataDoubleEscapedLessThan x @ Lexer {..} = do
+doScriptDataDoubleEscapedLessThan x@Lexer {..} = do
   c <- nextWord x
   if | c == chrSolidus -> do
          bufferReset lexerBuffer
@@ -1201,7 +1201,7 @@ doScriptDataDoubleEscapedLessThan x @ Lexer {..} = do
 
 -- 12.2.5.31 Script data double escape end state
 doScriptDataDoubleEscapeEnd :: Lexer s -> ST s ()
-doScriptDataDoubleEscapeEnd x @ Lexer {..} = do
+doScriptDataDoubleEscapeEnd x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1230,7 +1230,7 @@ doScriptDataDoubleEscapeEnd x @ Lexer {..} = do
 
 -- 12.2.5.32 Before attribute name state
 doBeforeAttrName :: Lexer s -> ST s ()
-doBeforeAttrName x @ Lexer {..} = do
+doBeforeAttrName x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1254,7 +1254,7 @@ doBeforeAttrName x @ Lexer {..} = do
 
 -- 12.2.5.33 Attribute name state
 doAttrName :: Lexer s -> ST s ()
-doAttrName x @ Lexer {..} = do
+doAttrName x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1289,7 +1289,7 @@ doAttrName x @ Lexer {..} = do
 
 -- 12.2.5.34 After attribute name state
 doAfterAttrName :: Lexer s -> ST s ()
-doAfterAttrName x @ Lexer {..} = do
+doAfterAttrName x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1314,7 +1314,7 @@ doAfterAttrName x @ Lexer {..} = do
 
 -- 12.2.5.35 Before attribute value state
 doBeforeAttrValue :: Lexer s -> ST s ()
-doBeforeAttrValue x @ Lexer {..} = do
+doBeforeAttrValue x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1335,7 +1335,7 @@ doBeforeAttrValue x @ Lexer {..} = do
 
 -- 12.2.5.36 Attribute value (double-quoted) state
 doAttrValueDoubleQuoted :: Lexer s -> ST s ()
-doAttrValueDoubleQuoted x @ Lexer {..} = do
+doAttrValueDoubleQuoted x@Lexer {..} = do
   c <- nextWord x
   if | c == chrQuote -> do
          doAfterAttrValue x
@@ -1352,7 +1352,7 @@ doAttrValueDoubleQuoted x @ Lexer {..} = do
 
 -- 12.2.5.37 Attribute value (single-quoted) state
 doAttrValueSingleQuoted :: Lexer s -> ST s ()
-doAttrValueSingleQuoted x @ Lexer {..} = do
+doAttrValueSingleQuoted x@Lexer {..} = do
   c <- nextWord x
   if | c == chrApostrophe -> do
          doAfterAttrValue x
@@ -1369,7 +1369,7 @@ doAttrValueSingleQuoted x @ Lexer {..} = do
 
 -- 12.2.5.38 Attribute value (unquoted) state
 doAttrValueUnquoted :: Lexer s -> ST s ()
-doAttrValueUnquoted x @ Lexer {..} = do
+doAttrValueUnquoted x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1400,7 +1400,7 @@ doAttrValueUnquoted x @ Lexer {..} = do
 
 -- 12.2.5.39 After attribute value (quoted) state
 doAfterAttrValue :: Lexer s -> ST s ()
-doAfterAttrValue x @ Lexer {..} = do
+doAfterAttrValue x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1423,7 +1423,7 @@ doAfterAttrValue x @ Lexer {..} = do
 
 -- 12.2.5.40 Self-closing start tag state
 doSelfClosingStartTag :: Lexer s -> ST s ()
-doSelfClosingStartTag x @ Lexer {..} = do
+doSelfClosingStartTag x@Lexer {..} = do
   c <- nextWord x
   if | c == chrGreater -> do
          tokenTagStartSetSelfClosing lexerToken
@@ -1440,7 +1440,7 @@ doSelfClosingStartTag x @ Lexer {..} = do
 
 -- 12.2.5.41 Bogus comment state
 doBogusComment :: Lexer s -> ST s ()
-doBogusComment x @ Lexer {..} = do
+doBogusComment x@Lexer {..} = do
   c <- nextWord x
   if | c == chrGreater -> do
          state x StateData
@@ -1454,7 +1454,7 @@ doBogusComment x @ Lexer {..} = do
 
 -- 12.2.5.42 Markup declaration open state
 doMarkupDeclarationOpen :: Lexer s -> ST s ()
-doMarkupDeclarationOpen x @ Lexer {..} = do
+doMarkupDeclarationOpen x@Lexer {..} = do
   f <- dataIndexer x
   n <- dataRemain x
   if | n > 1 &&
@@ -1505,7 +1505,7 @@ doMarkupDeclarationOpen x @ Lexer {..} = do
 
 -- 12.2.5.43 Comment start state
 doCommentStart :: Lexer s -> ST s ()
-doCommentStart x @ Lexer {..} = do
+doCommentStart x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          doCommentStartDash x
@@ -1519,7 +1519,7 @@ doCommentStart x @ Lexer {..} = do
 
 -- 12.2.5.44 Comment start dash state
 doCommentStartDash :: Lexer s -> ST s ()
-doCommentStartDash x @ Lexer {..} = do
+doCommentStartDash x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          doCommentEnd x
@@ -1538,7 +1538,7 @@ doCommentStartDash x @ Lexer {..} = do
 
 -- 12.2.5.45 Comment state
 doComment :: Lexer s -> ST s ()
-doComment x @ Lexer {..} = do
+doComment x@Lexer {..} = do
   c <- nextWord x
   if | c == chrLess -> do
          tokenCommentAppend c lexerToken
@@ -1555,7 +1555,7 @@ doComment x @ Lexer {..} = do
 
 -- 12.2.5.46 Comment less-than sign state
 doCommentLessThan :: Lexer s -> ST s ()
-doCommentLessThan x @ Lexer {..} = do
+doCommentLessThan x@Lexer {..} = do
   c <- nextWord x
   if | c == chrExclamation -> do
          tokenCommentAppend c lexerToken
@@ -1569,7 +1569,7 @@ doCommentLessThan x @ Lexer {..} = do
 
 -- 12.2.5.47 Comment less-than sign bang state
 doCommentLessThanBang :: Lexer s -> ST s ()
-doCommentLessThanBang x @ Lexer {..} = do
+doCommentLessThanBang x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          doCommentLessThanBangDash x
@@ -1579,7 +1579,7 @@ doCommentLessThanBang x @ Lexer {..} = do
 
 -- 12.2.5.48 Comment less-than sign bang dash state
 doCommentLessThanBangDash :: Lexer s -> ST s ()
-doCommentLessThanBangDash x @ Lexer {..} = do
+doCommentLessThanBangDash x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          doCommentLessThanBangDashDash x
@@ -1589,7 +1589,7 @@ doCommentLessThanBangDash x @ Lexer {..} = do
 
 -- 12.2.5.49 Comment less-than sign bang dash dash state
 doCommentLessThanBangDashDash :: Lexer s -> ST s ()
-doCommentLessThanBangDashDash x @ Lexer {..} = do
+doCommentLessThanBangDashDash x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen ||
        c == chrEOF -> do
@@ -1602,7 +1602,7 @@ doCommentLessThanBangDashDash x @ Lexer {..} = do
 
 -- 12.2.5.50 Comment end dash state
 doCommentEndDash :: Lexer s -> ST s ()
-doCommentEndDash x @ Lexer {..} = do
+doCommentEndDash x@Lexer {..} = do
   c <- nextWord x
   if | c == chrHyphen -> do
          doCommentEnd x
@@ -1617,7 +1617,7 @@ doCommentEndDash x @ Lexer {..} = do
 
 -- 12.2.5.51 Comment end state
 doCommentEnd :: Lexer s -> ST s ()
-doCommentEnd x @ Lexer {..} = do
+doCommentEnd x@Lexer {..} = do
   c <- nextWord x
   if | c == chrGreater -> do
          state x StateData
@@ -1639,7 +1639,7 @@ doCommentEnd x @ Lexer {..} = do
 
 -- 12.2.5.52 Comment end bang state
 doCommentEndBang :: Lexer s -> ST s ()
-doCommentEndBang x @ Lexer {..} = do
+doCommentEndBang x@Lexer {..} = do
   c <- nextWord x
   if | c == chrGreater -> do
          state x StateData
@@ -1666,7 +1666,7 @@ doCommentEndBang x @ Lexer {..} = do
 
 -- 12.2.5.53 DOCTYPE state
 doDoctype :: Lexer s -> ST s ()
-doDoctype x @ Lexer {..} = do
+doDoctype x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1689,7 +1689,7 @@ doDoctype x @ Lexer {..} = do
 
 -- 12.2.5.54 Before DOCTYPE name state
 doBeforeDoctypeName :: Lexer s -> ST s ()
-doBeforeDoctypeName x @ Lexer {..} = do
+doBeforeDoctypeName x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1719,7 +1719,7 @@ doBeforeDoctypeName x @ Lexer {..} = do
 
 -- 12.2.5.55 DOCTYPE name state
 doDoctypeName :: Lexer s -> ST s ()
-doDoctypeName x @ Lexer {..} = do
+doDoctypeName x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1743,7 +1743,7 @@ doDoctypeName x @ Lexer {..} = do
 
 -- 12.2.5.56 After DOCTYPE name state
 doAfterDoctypeName :: Lexer s -> ST s ()
-doAfterDoctypeName x @ Lexer {..} = do
+doAfterDoctypeName x@Lexer {..} = do
   c <- nextWord x
   -- Get data indexer after the character.
   f <- dataIndexer x
@@ -1783,7 +1783,7 @@ doAfterDoctypeName x @ Lexer {..} = do
 
 -- 12.2.5.57 After DOCTYPE public keyword state
 doAfterDoctypePublicKeyword :: Lexer s -> ST s ()
-doAfterDoctypePublicKeyword x @ Lexer {..} = do
+doAfterDoctypePublicKeyword x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1815,7 +1815,7 @@ doAfterDoctypePublicKeyword x @ Lexer {..} = do
 
 -- 12.2.5.58 Before DOCTYPE public identifier state
 doBeforeDoctypePublicId :: Lexer s -> ST s ()
-doBeforeDoctypePublicId x @ Lexer {..} = do
+doBeforeDoctypePublicId x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1845,7 +1845,7 @@ doBeforeDoctypePublicId x @ Lexer {..} = do
 
 -- 12.2.5.59 DOCTYPE public identifier (double-quoted) state
 doDoctypePublicIdDoubleQuoted :: Lexer s -> ST s ()
-doDoctypePublicIdDoubleQuoted x @ Lexer {..} = do
+doDoctypePublicIdDoubleQuoted x@Lexer {..} = do
   c <- nextWord x
   if | c == chrQuote -> do
          doAfterDoctypePublicId x
@@ -1865,7 +1865,7 @@ doDoctypePublicIdDoubleQuoted x @ Lexer {..} = do
 
 -- 12.2.5.60 DOCTYPE public identifier (single-quoted) state
 doDoctypePublicIdSingleQuoted :: Lexer s -> ST s ()
-doDoctypePublicIdSingleQuoted x @ Lexer {..} = do
+doDoctypePublicIdSingleQuoted x@Lexer {..} = do
   c <- nextWord x
   if | c == chrApostrophe -> do
          doAfterDoctypePublicId x
@@ -1885,7 +1885,7 @@ doDoctypePublicIdSingleQuoted x @ Lexer {..} = do
 
 -- 12.2.5.61 After DOCTYPE public identifier state
 doAfterDoctypePublicId :: Lexer s -> ST s ()
-doAfterDoctypePublicId x @ Lexer {..} = do
+doAfterDoctypePublicId x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1915,7 +1915,7 @@ doAfterDoctypePublicId x @ Lexer {..} = do
 
 -- 12.2.5.62 Between DOCTYPE public and system identifiers state
 doBetweenDoctypePublicAndSystem :: Lexer s -> ST s ()
-doBetweenDoctypePublicAndSystem x @ Lexer {..} = do
+doBetweenDoctypePublicAndSystem x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1943,7 +1943,7 @@ doBetweenDoctypePublicAndSystem x @ Lexer {..} = do
 
 -- 12.2.5.63 After DOCTYPE system keyword state
 doAfterDoctypeSystemKeyword :: Lexer s -> ST s ()
-doAfterDoctypeSystemKeyword x @ Lexer {..} = do
+doAfterDoctypeSystemKeyword x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -1975,7 +1975,7 @@ doAfterDoctypeSystemKeyword x @ Lexer {..} = do
 
 -- 12.2.5.64 Before DOCTYPE system identifier state
 doBeforeDoctypeSystemId :: Lexer s -> ST s ()
-doBeforeDoctypeSystemId x @ Lexer {..} = do
+doBeforeDoctypeSystemId x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -2005,7 +2005,7 @@ doBeforeDoctypeSystemId x @ Lexer {..} = do
 
 -- 12.2.5.65 DOCTYPE system identifier (double-quoted) state
 doDoctypeSystemIdDoubleQuoted :: Lexer s -> ST s ()
-doDoctypeSystemIdDoubleQuoted x @ Lexer {..} = do
+doDoctypeSystemIdDoubleQuoted x@Lexer {..} = do
   c <- nextWord x
   if | c == chrQuote -> do
          doAfterDoctypeSystemId x
@@ -2025,7 +2025,7 @@ doDoctypeSystemIdDoubleQuoted x @ Lexer {..} = do
 
 -- 12.2.5.66 DOCTYPE system identifier (single-quoted) state
 doDoctypeSystemIdSingleQuoted :: Lexer s -> ST s ()
-doDoctypeSystemIdSingleQuoted x @ Lexer {..} = do
+doDoctypeSystemIdSingleQuoted x@Lexer {..} = do
   c <- nextWord x
   if | c == chrApostrophe -> do
          doAfterDoctypeSystemId x
@@ -2045,7 +2045,7 @@ doDoctypeSystemIdSingleQuoted x @ Lexer {..} = do
 
 -- 12.2.5.67 After DOCTYPE system identifier state
 doAfterDoctypeSystemId :: Lexer s -> ST s ()
-doAfterDoctypeSystemId x @ Lexer {..} = do
+doAfterDoctypeSystemId x@Lexer {..} = do
   c <- nextWord x
   if | c == chrTab ||
        c == chrLF ||
@@ -2066,7 +2066,7 @@ doAfterDoctypeSystemId x @ Lexer {..} = do
 
 -- 12.2.5.68 Bogus DOCTYPE state
 doBogusDoctype :: Lexer s -> ST s ()
-doBogusDoctype x @ Lexer {..} = do
+doBogusDoctype x@Lexer {..} = do
   c <- nextWord x
   if | c == chrGreater -> do
          state x StateData
@@ -2079,7 +2079,7 @@ doBogusDoctype x @ Lexer {..} = do
 
 -- 12.2.5.69 CDATA section state
 doCDATASection :: Lexer s -> ST s ()
-doCDATASection x @ Lexer {..} = do
+doCDATASection x@Lexer {..} = do
   c <- nextWord x
   if | c == chrBracketRight -> do
          doCDATASectionBracket x
@@ -2093,7 +2093,7 @@ doCDATASection x @ Lexer {..} = do
 
 -- 12.2.5.70 CDATA section bracket state
 doCDATASectionBracket :: Lexer s -> ST s ()
-doCDATASectionBracket x @ Lexer {..} = do
+doCDATASectionBracket x@Lexer {..} = do
   c <- nextWord x
   if | c == chrBracketRight -> do
          doCDATASectionEnd x
@@ -2104,7 +2104,7 @@ doCDATASectionBracket x @ Lexer {..} = do
 
 -- 12.2.5.71 CDATA section end state
 doCDATASectionEnd :: Lexer s -> ST s ()
-doCDATASectionEnd x @ Lexer {..} = do
+doCDATASectionEnd x@Lexer {..} = do
   c <- nextWord x
   if | c == chrBracketRight -> do
          emitChar x c
@@ -2119,7 +2119,7 @@ doCDATASectionEnd x @ Lexer {..} = do
 
 -- 12.2.5.72 Character reference state
 doCharacterReference :: Lexer s -> ST s ()
-doCharacterReference x @ Lexer {..} = do
+doCharacterReference x@Lexer {..} = do
   bufferReset lexerBuffer
   bufferAppend chrAmpersand lexerBuffer
   c <- nextWord x
@@ -2140,7 +2140,7 @@ doCharacterReference x @ Lexer {..} = do
 
 -- 12.2.5.73 Named character reference state
 doNamedCharacterReference :: Lexer s -> ST s ()
-doNamedCharacterReference x @ Lexer {..} = do
+doNamedCharacterReference x@Lexer {..} = do
   o <- rref lexerOffset
   case entityMatch (bsDrop o lexerData) of
     Just (p, v, _) -> do
@@ -2169,7 +2169,7 @@ doNamedCharacterReference x @ Lexer {..} = do
 
 -- 12.2.5.74 Ambiguous ampersand state
 doAmbiguousAmpersand :: Lexer s -> ST s ()
-doAmbiguousAmpersand x @ Lexer {..} = do
+doAmbiguousAmpersand x@Lexer {..} = do
   c <- nextWord x
   if | chrASCIIAlphanumeric c -> do
          consumingAttibute x >>= \case
@@ -2186,7 +2186,7 @@ doAmbiguousAmpersand x @ Lexer {..} = do
 
 -- 12.2.5.75 Numeric character reference state
 doNumericCharacterReference :: Lexer s -> ST s ()
-doNumericCharacterReference x @ Lexer {..} = do
+doNumericCharacterReference x@Lexer {..} = do
   wref lexerCode 0
   c <- nextWord x
   if | c == chrUpperX || c == chrLowerX -> do
@@ -2198,7 +2198,7 @@ doNumericCharacterReference x @ Lexer {..} = do
 
 -- 12.2.5.76 Hexademical character reference start state
 doHexCharacterReferenceStart :: Lexer s -> ST s ()
-doHexCharacterReferenceStart x @ Lexer {..} = do
+doHexCharacterReferenceStart x@Lexer {..} = do
   c <- nextWord x
   if | chrASCIIHexDigit c -> do
          backWord x
@@ -2211,7 +2211,7 @@ doHexCharacterReferenceStart x @ Lexer {..} = do
 
 -- 12.2.5.77 Decimal character reference start state
 doDecimalCharacterReferenceStart :: Lexer s -> ST s ()
-doDecimalCharacterReferenceStart x @ Lexer {..} = do
+doDecimalCharacterReferenceStart x@Lexer {..} = do
   c <- nextWord x
   if | chrASCIIDigit c -> do
          backWord x
@@ -2224,7 +2224,7 @@ doDecimalCharacterReferenceStart x @ Lexer {..} = do
 
 -- 12.2.5.78 Hexademical character reference state
 doHexCharacterReference :: Lexer s -> ST s ()
-doHexCharacterReference x @ Lexer {..} = do
+doHexCharacterReference x@Lexer {..} = do
   c <- nextWord x
   if | chrASCIIDigit c -> do
          uref lexerCode $ \y -> 16 * y + (fromIntegral c - 0x30)
@@ -2244,7 +2244,7 @@ doHexCharacterReference x @ Lexer {..} = do
 
 -- 12.2.5.79 Decimal character reference state
 doDecimalCharacterReference :: Lexer s -> ST s ()
-doDecimalCharacterReference x @ Lexer {..} = do
+doDecimalCharacterReference x@Lexer {..} = do
   c <- nextWord x
   if | chrASCIIDigit c -> do
          uref lexerCode $ \y -> 10 * y + (fromIntegral c - 0x30)
@@ -2258,7 +2258,7 @@ doDecimalCharacterReference x @ Lexer {..} = do
 
 -- 12.2.5.80 Numeric character reference end state
 doNumericCharacterReferenceEnd :: Lexer s -> ST s ()
-doNumericCharacterReferenceEnd x @ Lexer {..} = do
+doNumericCharacterReferenceEnd x@Lexer {..} = do
   c <- rref lexerCode
   let n = fromIntegral c
   if | c == 0 -> do

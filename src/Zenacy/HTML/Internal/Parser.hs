@@ -311,7 +311,7 @@ parserMake ParserOptions{..} lexer = do
 
 -- | The parser main loop.
 parserRun :: Parser s -> ST s ParserResult
-parserRun p @ Parser {..} = do
+parserRun p@Parser {..} = do
   rref parserDone >>= \case
     True -> do
       Lexer{..} <- rref parserLexer
@@ -328,7 +328,7 @@ parserRun p @ Parser {..} = do
 
 -- | Handles tree construction dispatch.
 dispatchTreeConstruction :: Parser s -> Token -> ST s ()
-dispatchTreeConstruction p @ Parser {..} t = do
+dispatchTreeConstruction p@Parser {..} t = do
   e <- elementStackEmpty p
   a <- adjustedCurrentNode p
   b <- pure $ case a of
@@ -354,7 +354,7 @@ dispatchTreeConstruction p @ Parser {..} t = do
 
 -- | Processes a token as HTML content.
 doHtmlContent :: Parser s -> Token -> ST s ()
-doHtmlContent p @ Parser {..} t = do
+doHtmlContent p@Parser {..} t = do
   m <- rref parserInsertionMode
   parserInserter m p t
 
@@ -391,7 +391,7 @@ parserInserter = \case
 
 -- | Handles parse errors.
 parseError :: Parser s -> Maybe Token -> BS -> ST s ()
-parseError p @ Parser {..} t s =
+parseError p@Parser {..} t s =
   when parserLogErrors $
     uref parserErrors $ flip D.snoc e
   where
@@ -446,41 +446,41 @@ elementStack Parser {..} = readSTRef parserElementStack
 
 -- | Detmermines if the element stack is empty.
 elementStackEmpty :: Parser s -> ST s Bool
-elementStackEmpty p @ Parser {..} = null <$> elementStack p
+elementStackEmpty p@Parser {..} = null <$> elementStack p
 
 -- | Returns the size of the element stack.
 elementStackSize :: Parser s -> ST s Int
-elementStackSize p @ Parser {..} = length <$> elementStack p
+elementStackSize p@Parser {..} = length <$> elementStack p
 
 -- | Modifies the element stack by applying a function.
 elementStackModify :: Parser s -> ([DOMID] -> [DOMID]) -> ST s ()
-elementStackModify p @ Parser {..} f = uref parserElementStack f
+elementStackModify p@Parser {..} f = uref parserElementStack f
 
 -- | Pushes an element on the element stack.
 elementStackPush :: Parser s -> DOMID -> ST s ()
-elementStackPush p @ Parser {..} x = elementStackModify p $ (x:)
+elementStackPush p@Parser {..} x = elementStackModify p $ (x:)
 
 -- | Pops an element off of the element stack.
 elementStackPop :: Parser s -> ST s ()
-elementStackPop p @ Parser {..} = elementStackModify p $ drop 1
+elementStackPop p@Parser {..} = elementStackModify p $ drop 1
 
 -- | Pops nodes from the element stack while a predicate is true.
 elementStackPopWhile :: Parser s -> (DOMNode -> Bool) -> ST s ()
-elementStackPopWhile p @ Parser {..} f =
+elementStackPopWhile p@Parser {..} f =
   currentNode p >>= \case
     Just a | f a -> elementStackPop p >> elementStackPopWhile p f
     _ -> pure ()
 
 -- | Pops a nodes from the element stack if a predicate is true.
 elementStackPopIf :: Parser s -> (DOMNode -> Bool) -> ST s ()
-elementStackPopIf p @ Parser {..} f =
+elementStackPopIf p@Parser {..} f =
   currentNode p >>= \case
     Just a | f a -> elementStackPop p
     _ -> pure ()
 
 -- | Pops elements from the stack until a specified element has been popped.
 elementStackPopUntil :: Parser s -> (DOMType -> Bool) -> ST s ()
-elementStackPopUntil p @ Parser {..} f = do
+elementStackPopUntil p@Parser {..} f = do
   elementStackPopWhile p (not . g)
   elementStackPopIf p g
   where
@@ -668,11 +668,11 @@ newID p x = do
 
 -- | Converts a node ID to a node.
 getNode :: Parser s -> DOMID -> ST s (Maybe DOMNode)
-getNode p @ Parser {..} x = flip domGetNode x <$> getDOM p
+getNode p@Parser {..} x = flip domGetNode x <$> getDOM p
 
 -- -- | Gets the element name for a node ID.
 nodeElementName :: Parser s -> DOMID -> ST s BS
-nodeElementName p @ Parser {..} x = do
+nodeElementName p@Parser {..} x = do
   d <- getDOM p
   pure $ case domGetNode d x of
     Just a -> domNodeElementName a
@@ -680,11 +680,11 @@ nodeElementName p @ Parser {..} x = do
 
 -- | Gets the last node ID.
 lastNodeID :: Parser s -> ST s (Maybe DOMID)
-lastNodeID p @ Parser {..} = listToMaybe . reverse <$> elementStack p
+lastNodeID p@Parser {..} = listToMaybe . reverse <$> elementStack p
 
 -- | Gets the current node ID.
 currentNodeID :: Parser s -> ST s (Maybe DOMID)
-currentNodeID p @ Parser {..} = listToMaybe <$> elementStack p
+currentNodeID p@Parser {..} = listToMaybe <$> elementStack p
 
 -- | Gets the current node.
 currentNode :: Parser s -> ST s (Maybe DOMNode)
@@ -714,7 +714,7 @@ currentNodeHasHTMLTypeIn p = currentNodeHasTypeIn p . domTypesHTML
 
 -- | Gets the adjusted current node ID.
 adjustedCurrentNodeID :: Parser s -> ST s (Maybe DOMID)
-adjustedCurrentNodeID p @ Parser {..} = do
+adjustedCurrentNodeID p@Parser {..} = do
   f <- rref parserFragmentMode
   n <- elementStackSize p
   if f && n == 1
@@ -767,7 +767,7 @@ setDOM Parser {..} = wref parserDOM
 
 -- | Modifies the DOM.
 modifyDOM :: Parser s -> (DOM -> DOM) -> ST s ()
-modifyDOM p @ Parser {..} = uref parserDOM
+modifyDOM p@Parser {..} = uref parserDOM
 
 -- | Sets the insertion mode.
 setMode :: Parser s -> ParserMode -> ST s ()
@@ -813,7 +813,7 @@ getFormElement p = getFormID p >>= maybe (pure Nothing) (getNode p)
 
 -- | Gets the current form element type.
 getFormType :: Parser s -> ST s (Maybe DOMType)
-getFormType p @ Parser {..} =
+getFormType p@Parser {..} =
   getFormElement p >>= pure . maybe Nothing (Just . domNodeType)
 
 -- | Saves the current node as the form element.
@@ -826,7 +826,7 @@ formNotNull p = isJust <$> getFormID p
 
 -- | Initializes the self closing flag.
 selfClosingInit :: Parser s -> Token -> ST s ()
-selfClosingInit p @ Parser {..} t =
+selfClosingInit p@Parser {..} t =
   wref parserSelfClosingFlag $
     case t of
       TStart {..} -> tStartClosed
@@ -884,7 +884,7 @@ activeFormatAddMarker Parser {..} =
 
 -- | Adds an element to the list of active format elements.
 activeFormatAddElement :: Parser s -> Token -> DOMID -> ST s ()
-activeFormatAddElement p @ Parser {..} t x = do
+activeFormatAddElement p@Parser {..} t x = do
   d <- getDOM p
   a <- activeFormatList p
   let match (ParserFormatElement y _) = domMatch d x y
@@ -896,12 +896,12 @@ activeFormatAddElement p @ Parser {..} t x = do
 
 -- | Adds the current node to the list of active format elements.
 activeFormatAddCurrentNode :: Parser s -> Token -> ST s ()
-activeFormatAddCurrentNode p @ Parser {..} t =
+activeFormatAddCurrentNode p@Parser {..} t =
   whenJustM (currentNodeID p) $ activeFormatAddElement p t
 
 -- | Determines if any format elements up to a marker satisfy a predicate.
 activeFormatAny :: Parser s -> (DOMNode -> Bool) -> ST s Bool
-activeFormatAny p @ Parser {..} f = do
+activeFormatAny p@Parser {..} f = do
   d <- getDOM p
   a <- activeFormatList p
   pure $
@@ -917,7 +917,7 @@ activeFormatContains p x = any (formatItemHasID x) <$> activeFormatList p
 
 -- | Finds a format item with a specified tag name.
 activeFormatFindTag :: Parser s -> BS -> ST s (Maybe ParserFormatItem)
-activeFormatFindTag p @ Parser {..} x = do
+activeFormatFindTag p@Parser {..} x = do
   d <- getDOM p
   a <- activeFormatList p
   pure $
@@ -927,7 +927,7 @@ activeFormatFindTag p @ Parser {..} x = do
 
 -- | Finds the token for a node ID.
 activeFormatFindToken :: Parser s -> DOMID -> ST s (Maybe Token)
-activeFormatFindToken p @ Parser {..} x =
+activeFormatFindToken p@Parser {..} x =
   activeFormatList p >>= f
   where
     f [] = pure Nothing
@@ -958,7 +958,7 @@ isOpen x = \case
 
 -- | Reopens a format item.
 reopen :: Parser s -> [ParserFormatItem] -> [ParserFormatItem] -> ST s ()
-reopen p @ Parser {..} b a =
+reopen p@Parser {..} b a =
   case b of
     [] ->
       wref parserActiveFormatList a
@@ -1031,26 +1031,26 @@ formatItemHasTag d n (ParserFormatElement i _) =
 
 -- | Gets the current template insertion mode.
 templateModeCurrent :: Parser s -> ST s (Maybe ParserMode)
-templateModeCurrent p @ Parser {..} = listToMaybe <$> rref parserTemplateMode
+templateModeCurrent p@Parser {..} = listToMaybe <$> rref parserTemplateMode
 
 -- | Pushes an insertion mode onto the stack of template insertion modes.
 templateModePush :: Parser s -> ParserMode -> ST s ()
-templateModePush p @ Parser {..} x = uref parserTemplateMode (x:)
+templateModePush p@Parser {..} x = uref parserTemplateMode (x:)
 
 -- | Pops an insertion mode off of the stack of template insertion modes.
 templateModePop :: Parser s -> ST s ()
-templateModePop p @ Parser {..} =
+templateModePop p@Parser {..} =
   rref parserTemplateMode >>= \case
     (x:xs) -> wref parserTemplateMode xs
     []     -> parseError p Nothing "attempt to pop empty template mode stack"
 
 -- | Gets the current number of template modes.
 templateModeCount :: Parser s -> ST s Int
-templateModeCount p @ Parser {..} = length <$> rref parserTemplateMode
+templateModeCount p@Parser {..} = length <$> rref parserTemplateMode
 
 -- | Gets the appropriate insertion location.
 appropriateInsertionLocation :: Parser s -> Maybe DOMID -> ST s DOMPos
-appropriateInsertionLocation p @ Parser {..} override = do
+appropriateInsertionLocation p@Parser {..} override = do
   -- (1) Check for override target.
   target <- case override of
     Just a -> pure a
@@ -1310,11 +1310,11 @@ foreignAttributeMap = Map.fromList
 
 -- | Inserts a node as a child of another node.
 insertNode :: Parser s -> DOMPos -> DOMID -> ST s ()
-insertNode p @ Parser {..} i x = modifyDOM p $ domInsert i x
+insertNode p@Parser {..} i x = modifyDOM p $ domInsert i x
 
 -- | Inserts a new node as a child of another node.
 insertNewNode :: Parser s -> DOMPos -> DOMNode -> ST s DOMID
-insertNewNode p @ Parser {..} i x = do
+insertNewNode p@Parser {..} i x = do
   d <- getDOM p
   let (d', j) = domInsertNew i x d
   setDOM p d'
@@ -1322,20 +1322,20 @@ insertNewNode p @ Parser {..} i x = do
 
 -- | Inserts a node as a child of the document.
 insertDocumentNode :: Parser s -> DOMID -> ST s ()
-insertDocumentNode p @ Parser {..} = insertNode p domRootPos
+insertDocumentNode p@Parser {..} = insertNode p domRootPos
 
 -- | Inserts a new node as a child of the document.
 insertNewDocumentNode :: Parser s -> DOMNode -> ST s ()
-insertNewDocumentNode p @ Parser {..} = void . insertNewNode p domRootPos
+insertNewDocumentNode p@Parser {..} = void . insertNewNode p domRootPos
 
 -- | Makes a comment node.
 commentMake :: Parser s -> Token -> ST s DOMNode
-commentMake p @ Parser {..} t =
+commentMake p@Parser {..} t =
   pure $ domDefaultComment { domCommentData = tCommentData t }
 
 -- | Makes a document type node.
 doctypeMake :: Parser s -> Token -> ST s DOMNode
-doctypeMake p @ Parser {..} TDoctype {..} =
+doctypeMake p@Parser {..} TDoctype {..} =
   pure $ domDefaultDoctype
     { domDoctypeName     = tDoctypeName
     , domDoctypePublicID = tDoctypePublic
@@ -1344,18 +1344,18 @@ doctypeMake p @ Parser {..} TDoctype {..} =
 
 -- | Inserts a new comment in the document.
 insertComment :: Parser s -> Token -> ST s ()
-insertComment p @ Parser {..} t =
+insertComment p@Parser {..} t =
   insertionLocation p >>= \x ->
     commentMake p t >>= void . insertNewNode p x
 
 -- | Inserts a new comment as child of the document node.
 insertDocComment :: Parser s -> Token -> ST s ()
-insertDocComment p @ Parser {..} t =
+insertDocComment p@Parser {..} t =
   commentMake p t >>= void . insertNewNode p domRootPos
 
 -- | Inserts a new character in the document.
 insertChar :: Parser s -> Token -> ST s ()
-insertChar p @ Parser {..} =
+insertChar p@Parser {..} =
   withCharToken $ \w -> do
     pos <- insertionLocation p
     let i = domPosParent pos
@@ -1397,7 +1397,7 @@ textMapLookup Parser {..} i = do
 
 -- | Returns a dom with the text nodes populated with text values.
 textMapDOM :: Parser s -> ST s DOM
-textMapDOM p @ Parser {..} = do
+textMapDOM p@Parser {..} = do
   DOM{..} <- getDOM p
   m <- rref parserTextMap >>= mapM bufferPack
   let f x = IntMap.findWithDefault bsEmpty x m
@@ -1480,7 +1480,7 @@ generateImpliedEndTagsThoroughly p =
 
 -- | Resets the insertion mode appropriately.
 resetInsertionMode :: Parser s -> ST s ()
-resetInsertionMode p @ Parser {..} =
+resetInsertionMode p@Parser {..} =
   elementStackNodes p >>= f
   where
     f [] = pure ()
@@ -1582,7 +1582,7 @@ getsAA p f = f <$> getAA p
 
 -- | Runs the adoption agency algorithm.
 adoptionAgencyRun :: Parser s -> BS -> ST s () -> ST s ()
-adoptionAgencyRun p @ Parser {..} subject anyOther = do
+adoptionAgencyRun p@Parser {..} subject anyOther = do
   a <- currentNodeHasType p $ domMakeTypeHTML subject
   b <- currentNodeID p >>= \case
     Just i -> notM $ activeFormatContains p i
@@ -1854,7 +1854,7 @@ anyPrefix Nothing ys = False
 
 -- | Handle the initial insertion mode.
 doModeInitial :: Parser s -> Token -> ST s ()
-doModeInitial p @ Parser {..} t =
+doModeInitial p@Parser {..} t =
   case t of
     TChar {..} | chrWhitespace tCharData -> do
       pure ()
@@ -1878,7 +1878,7 @@ doModeInitial p @ Parser {..} t =
 
 -- | Handle the before html insertion mode.
 doModeBeforeHtml :: Parser s -> Token -> ST s ()
-doModeBeforeHtml p @ Parser {..} t =
+doModeBeforeHtml p@Parser {..} t =
   case t of
     TDoctype {} ->
       parseError p (Just t) "before html doctype"
@@ -1903,7 +1903,7 @@ doModeBeforeHtml p @ Parser {..} t =
 
 -- | Handle the before head insertion mode.
 doModeBeforeHead :: Parser s -> Token -> ST s ()
-doModeBeforeHead p @ Parser {..} t =
+doModeBeforeHead p@Parser {..} t =
   case t of
     TChar {..} | chrWhitespace tCharData ->
       pure ()
@@ -1933,7 +1933,7 @@ doModeBeforeHead p @ Parser {..} t =
 
 -- | Handles the in-head parser mode.
 doModeInHead :: Parser s -> Token -> ST s ()
-doModeInHead p @ Parser {..} t =
+doModeInHead p@Parser {..} t =
   case t of
     TChar {..} | chrWhitespace tCharData ->
       insertChar p t
@@ -2016,7 +2016,7 @@ doModeInHead p @ Parser {..} t =
 
 -- | Handles the in head no script parser mode.
 doModeInHeadNoscript :: Parser s -> Token -> ST s ()
-doModeInHeadNoscript p @ Parser {..} t =
+doModeInHeadNoscript p@Parser {..} t =
   case t of
     TDoctype {} ->
       warn "doctype"
@@ -2054,7 +2054,7 @@ doModeInHeadNoscript p @ Parser {..} t =
 
 -- | Handles the after head parser mode.
 doModeAfterHead :: Parser s -> Token -> ST s ()
-doModeAfterHead p @ Parser {..} t =
+doModeAfterHead p@Parser {..} t =
   case t of
     TChar {..} | chrWhitespace tCharData ->
       insertChar p t
@@ -2097,7 +2097,7 @@ doModeAfterHead p @ Parser {..} t =
 
 -- | Handles the in body parser mode.
 doModeInBody :: Parser s -> Token -> ST s ()
-doModeInBody p @ Parser {..} t =
+doModeInBody p@Parser {..} t =
   case t of
     TChar {..} | chrWhitespace tCharData -> do
       activeFormatReconstruct p
@@ -2534,7 +2534,7 @@ doModeInBody p @ Parser {..} t =
 
 -- | Handle the text insertion mode.
 doModeText :: Parser s -> Token -> ST s ()
-doModeText p @ Parser {..} t =
+doModeText p@Parser {..} t =
   case t of
     TChar {} ->
       insertChar p t
@@ -2554,7 +2554,7 @@ doModeText p @ Parser {..} t =
 
 -- | Handle the in-table insertion mode.
 doModeInTable :: Parser s -> Token -> ST s ()
-doModeInTable p @ Parser {..} t =
+doModeInTable p@Parser {..} t =
   case t of
     TChar {} -> do
       a <- currentNodeHasTypeIn p $ domTypesHTML
@@ -2656,7 +2656,7 @@ doModeInTable p @ Parser {..} t =
 
 -- | Handle the in-table-text insertion mode.
 doModeInTableText :: Parser s -> Token -> ST s ()
-doModeInTableText p @ Parser {..} t =
+doModeInTableText p@Parser {..} t =
   case t of
     TChar {} ->
       pendingTableCharAppend p t
@@ -2678,7 +2678,7 @@ doModeInTableText p @ Parser {..} t =
 
 -- | Handle the in-caption insertion mode.
 doModeInCaption :: Parser s -> Token -> ST s ()
-doModeInCaption p @ Parser {..} t =
+doModeInCaption p@Parser {..} t =
   case t of
     TEnd { tEndName = x@"caption" } ->
       processCaption
@@ -2714,7 +2714,7 @@ doModeInCaption p @ Parser {..} t =
 
 -- | Handle the in-column-group insertion mode.
 doModeInColumnGroup :: Parser s -> Token -> ST s ()
-doModeInColumnGroup p @ Parser {..} t =
+doModeInColumnGroup p@Parser {..} t =
   case t of
     TChar {..} | chrWhitespace tCharData ->
       insertChar p t
@@ -2759,7 +2759,7 @@ doModeInColumnGroup p @ Parser {..} t =
 
 -- | Handle the in-table-body insertion mode.
 doModeInTableBody :: Parser s -> Token -> ST s ()
-doModeInTableBody p @ Parser {..} t =
+doModeInTableBody p@Parser {..} t =
   case t of
     TStart { tStartName = "tr" } -> do
       clearToTableBodyContext
@@ -2810,7 +2810,7 @@ doModeInTableBody p @ Parser {..} t =
 
 -- | Handle the in-row insertion mode.
 doModeInRow :: Parser s -> Token -> ST s ()
-doModeInRow p @ Parser {..} t =
+doModeInRow p@Parser {..} t =
   case t of
     TStart { tStartName = x } | elem x ["th", "td"] -> do
       clearToTableRowContext
@@ -2862,7 +2862,7 @@ doModeInRow p @ Parser {..} t =
 
 -- | Handle the in-cell insertion mode.
 doModeInCell :: Parser s -> Token -> ST s ()
-doModeInCell p @ Parser {..} t =
+doModeInCell p@Parser {..} t =
   case t of
     TEnd { tEndName = x } | elem x ["td", "th"] -> do
       let a = domMakeTypeHTML x
@@ -2913,7 +2913,7 @@ doModeInCell p @ Parser {..} t =
 
 -- | Handle the in-select insertion mode.
 doModeInSelect :: Parser s -> Token -> ST s ()
-doModeInSelect p @ Parser {..} t =
+doModeInSelect p@Parser {..} t =
   case t of
     TChar {} ->
       insertChar p t
@@ -2983,7 +2983,7 @@ doModeInSelect p @ Parser {..} t =
 
 -- | Handle the in-select-in-table insertion mode.
 doModeInSelectInTable :: Parser s -> Token -> ST s ()
-doModeInSelectInTable p @ Parser {..} t =
+doModeInSelectInTable p@Parser {..} t =
   case t of
     TStart { tStartName = x } | elem x
       ["caption", "table", "tbody", "tfoot",
@@ -3008,7 +3008,7 @@ doModeInSelectInTable p @ Parser {..} t =
 
 -- | Handle the in-template insertion mode.
 doModeInTemplate :: Parser s -> Token -> ST s ()
-doModeInTemplate p @ Parser {..} t =
+doModeInTemplate p@Parser {..} t =
   case t of
     TChar {} ->
       doModeInBody p t
@@ -3066,7 +3066,7 @@ doModeInTemplate p @ Parser {..} t =
 
 -- | Handle the after-body insertion mode.
 doModeAfterBody :: Parser s -> Token -> ST s ()
-doModeAfterBody p @ Parser {..} t =
+doModeAfterBody p@Parser {..} t =
   case t of
     TChar {..} | chrWhitespace tCharData ->
       doModeInBody p t
@@ -3095,7 +3095,7 @@ doModeAfterBody p @ Parser {..} t =
 
 -- | Handle the in-frameset insertion mode.
 doModeInFrameset :: Parser s -> Token -> ST s ()
-doModeInFrameset p @ Parser {..} t =
+doModeInFrameset p@Parser {..} t =
   case t of
     TChar {..} | chrWhitespace tCharData ->
       insertChar p t
@@ -3134,7 +3134,7 @@ doModeInFrameset p @ Parser {..} t =
 
 -- | Handle the after-frameset insertion mode.
 doModeAfterFrameset :: Parser s -> Token -> ST s ()
-doModeAfterFrameset p @ Parser {..} t =
+doModeAfterFrameset p@Parser {..} t =
   case t of
     TChar {..} | chrWhitespace tCharData ->
       insertChar p t
@@ -3158,7 +3158,7 @@ doModeAfterFrameset p @ Parser {..} t =
 
 -- | Handle the after-after-body insertion mode.
 doModeAfterAfterBody :: Parser s -> Token -> ST s ()
-doModeAfterAfterBody p @ Parser {..} t =
+doModeAfterAfterBody p@Parser {..} t =
   case t of
     TComment {} ->
       insertDocComment p t
@@ -3180,7 +3180,7 @@ doModeAfterAfterBody p @ Parser {..} t =
 
 -- | Handle the after-after-frameset insertion mode.
 doModeAfterAfterFrameset :: Parser s -> Token -> ST s ()
-doModeAfterAfterFrameset p @ Parser {..} t =
+doModeAfterAfterFrameset p@Parser {..} t =
   case t of
     TComment {} ->
       insertDocComment p t
@@ -3202,7 +3202,7 @@ doModeAfterAfterFrameset p @ Parser {..} t =
 
 -- | Handle foreign content.
 doForeignContent :: Parser s -> Token -> ST s ()
-doForeignContent p @ Parser {..} t =
+doForeignContent p@Parser {..} t =
   case t of
     TChar {..} | chrWhitespace tCharData ->
       insertChar p t

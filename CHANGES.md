@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.0.4
+
+* Remove whitespace around @ patterns for GHC 9
+* Upgrade transformers dependency
+
 ## 2.0.2
 
 * Upgrade bytestring dependency

@@ -115,7 +115,7 @@ extract = go . htmlParseEasy
     go = \case
       HTMLDocument n c ->
         concatMap go c
-      e @ (HTMLElement "a" s a c) ->
+      e@(HTMLElement "a" s a c) ->
         case htmlElemAttrFind (htmlAttrHasName "href") e of
           Just (HTMLAttr n v s) ->
             v : concatMap go c
