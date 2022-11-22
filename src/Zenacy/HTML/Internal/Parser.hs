@@ -90,7 +90,8 @@ import Data.Sequence
   ( Seq
   )
 import qualified Data.Sequence as Seq
-  ( fromList
+  ( empty
+  , fromList
   )
 import Data.Set
   ( Set
@@ -1109,17 +1110,23 @@ createElementForToken :: Parser s -> Token -> HTMLNamespace -> ST s DOMID
 createElementForToken p t s
   | tStartName t == "template" = do
       i <- newID p $ domDefaultFragment
-      j <- newID p $ domDefaultTemplate
-        { domTemplateNamespace = s
-        , domTemplateContents  = i
+      j <- newID p $ DOMTemplate
+        { domTemplateID         = domNull
+        , domTemplateNamespace  = s
+        , domTemplateAttributes = Seq.empty
+        , domTemplateContents   = i
+        , domTemplateParent     = domNull
         }
       modifyDOM p $ domSetParent i j
       pure j
   | otherwise = do
-      i <- newID p $ domDefaultElement
-        { domElementName       = tStartName t
-        , domElementAttributes = Seq.fromList $ map f (tStartAttr t)
+      i <- newID p $ DOMElement
+        { domElementID         = domNull
+        , domElementName       = tStartName t
         , domElementNamespace  = s
+        , domElementAttributes = Seq.fromList $ map f (tStartAttr t)
+        , domElementChildren   = Seq.empty
+        , domElementParent     = domNull
         }
       pure i
   where
@@ -1162,30 +1169,42 @@ adjustAttrMathML t =
 
 -- | Adjusts the SVG attributes for a token.
 adjustAttrSVG :: Token -> Token
-adjustAttrSVG t =
-  t { tStartAttr = map f $ tStartAttr t }
+adjustAttrSVG token =
+  case token of
+    TStart {..} ->
+      token { tStartAttr = map f tStartAttr }
+    _otherwise ->
+      token
   where
-    f t@(TAttr n v s) =
+    f a@(TAttr n v s) =
       case Map.lookup n svgAttributeMap of
         Just n' -> TAttr n' v s
-        Nothing -> t
+        Nothing -> a
 
 -- | Adjusts the foreign attributes for a token.
 adjustAttrForeign :: Token -> Token
-adjustAttrForeign t =
-  t { tStartAttr = map f $ tStartAttr t }
+adjustAttrForeign token =
+  case token of
+    TStart {..} ->
+      token { tStartAttr = map f tStartAttr }
+    _otherwise ->
+      token
   where
-    f t@(TAttr n v s) =
+    f a@(TAttr n v s) =
       case Map.lookup n foreignAttributeMap of
         Just (n', s') -> TAttr n' v s'
-        Nothing -> t
+        Nothing -> a
 
 -- | Adjusts the element name for an SVG element.
 adjustElemSVG :: Token -> Token
-adjustElemSVG t =
-  case Map.lookup (tStartName t) svgElementMap of
-    Just x -> t { tStartName = x }
-    Nothing -> t
+adjustElemSVG token =
+  case token of
+    TStart {..} ->
+      case Map.lookup tStartName svgElementMap of
+        Just x -> token { tStartName = x }
+        Nothing -> token
+    _otherwise ->
+      token
 
 -- | Adjustable SVG attribute map.
 svgAttributeMap :: Map BS BS
@@ -1331,16 +1350,25 @@ insertNewDocumentNode p@Parser {..} = void . insertNewNode p domRootPos
 -- | Makes a comment node.
 commentMake :: Parser s -> Token -> ST s DOMNode
 commentMake p@Parser {..} t =
-  pure $ domDefaultComment { domCommentData = tCommentData t }
+  pure DOMComment
+    { domCommentID     = domNull
+    , domCommentData   = tCommentData t
+    , domCommentParent = domNull
+    }
 
 -- | Makes a document type node.
 doctypeMake :: Parser s -> Token -> ST s DOMNode
-doctypeMake p@Parser {..} TDoctype {..} =
-  pure $ domDefaultDoctype
-    { domDoctypeName     = tDoctypeName
-    , domDoctypePublicID = tDoctypePublic
-    , domDoctypeSystemID = tDoctypeSystem
-    }
+doctypeMake p@Parser {..} = pure . \case
+  TDoctype {..} ->
+    DOMDoctype
+      { domDoctypeID       = domNull
+      , domDoctypeName     = tDoctypeName
+      , domDoctypePublicID = tDoctypePublic
+      , domDoctypeSystemID = tDoctypeSystem
+      , domDoctypeParent   = domNull
+      }
+  _otherwise ->
+    domDefaultDoctype
 
 -- | Inserts a new comment in the document.
 insertComment :: Parser s -> Token -> ST s ()
@@ -2072,17 +2100,36 @@ doModeAfterHead p@Parser {..} t =
       insertHtmlElement p t
       setMode p ModeInFrameset
     TStart { tStartName = x }
-      | elem x [ "base", "basefont", "bgsound", "link", "meta", "noframes",
-                 "script", "style", "template", "title", "head" ] -> do
-          parseError p (Just t) "AfterHead bad start tag"
-          Just h <- getHeadID p
-          elementStackPush p h
-          doModeInHead p t
-          elementStackRemove p h
+      | elem x
+        [ "base"
+        , "basefont"
+        , "bgsound"
+        , "link"
+        , "meta"
+        , "noframes"
+        , "script"
+        , "style"
+        , "template"
+        , "title"
+        , "head"
+        ] -> do
+          parseError p (Just t) "after head bad start tag"
+          getHeadID p >>= \case
+            Just h -> do
+              elementStackPush p h
+              doModeInHead p t
+              elementStackRemove p h
+            Nothing -> do
+              -- TODO: might need an error in this case.
+              pure ()
     TEnd { tEndName = "template" } ->
       doModeInHead p t
     TEnd { tEndName = x }
-      | elem x [ "body", "html", "br" ] -> do
+      | elem x
+        [ "body"
+        , "html"
+        , "br"
+        ] -> do
           insertHtmlElementNamed p "body"
           setMode p ModeInBody
           reprocess p t
@@ -2113,12 +2160,26 @@ doModeInBody p@Parser {..} t =
     TStart { tStartName = x@"html" } -> do
       warn x
       unlessM (elementStackHasTemplate p) $ do
-        Just i <- lastNodeID p
-        modifyDOM p $ domAttrMerge i $ Seq.fromList $
-          map (\(TAttr n v s) -> DOMAttr n v s) $ tStartAttr t
+        lastNodeID p >>= \case
+          Just i -> do
+            modifyDOM p $ domAttrMerge i $ Seq.fromList $
+              map (\(TAttr n v s) -> DOMAttr n v s) $ tStartAttr t
+          Nothing -> do
+            -- TODO: consider an error for this case
+            pure ()
     TStart { tStartName = x }
-      | elem x ["base", "basefont", "bgsound", "link", "meta",
-                "noframes", "script", "style", "template", "title"] ->
+      | elem x
+        [ "base"
+        , "basefont"
+        , "bgsound"
+        , "link"
+        , "meta"
+        , "noframes"
+        , "script"
+        , "style"
+        , "template"
+        , "title"
+        ] ->
           doModeInHead p t
     TEnd { tEndName = "template" } ->
       doModeInHead p t
@@ -2128,20 +2189,28 @@ doModeInBody p@Parser {..} t =
         ||^ liftA (==1) (elementStackSize p)
         ||^ (elementStackHasTemplate p)) $ do
           frameSetNotOK p
-          Just i <- listToMaybe . drop 1 . reverse <$> elementStack p
-          modifyDOM p $ domAttrMerge i $ Seq.fromList $
-            map (\(TAttr n v s) -> DOMAttr n v s) $ tStartAttr t
+          y <- listToMaybe . drop 1 . reverse <$> elementStack p
+          case y of
+            Just i -> do
+              modifyDOM p $ domAttrMerge i $ Seq.fromList $
+                map (\(TAttr n v s) -> DOMAttr n v s) $ tStartAttr t
+            Nothing -> do
+              pure ()
     TStart { tStartName = x@"frameset" } -> do
       warn x
       unlessM (liftA (==1) (elementStackSize p)
         ||^ notM (elementStackHasBody p)
         ||^ notM (rref parserFrameSetOK)) $ do
-          Just n <- listToMaybe . drop 1 . reverse <$> elementStackNodes p
-          modifyDOM p $ domRemoveChild (domNodeParent n) $ domNodeID n
-          elementStackPopWhile p $ \n ->
-            domNodeType n /= domMakeTypeHTML "html"
-          insertHtmlElement p t
-          setMode p ModeInFrameset
+          y <- listToMaybe . drop 1 . reverse <$> elementStackNodes p
+          case y of
+            Just n -> do
+              modifyDOM p $ domRemoveChild (domNodeParent n) $ domNodeID n
+              elementStackPopWhile p $ \n ->
+                domNodeType n /= domMakeTypeHTML "html"
+              insertHtmlElement p t
+              setMode p ModeInFrameset
+            Nothing -> do
+              pure ()
     TEOF -> do
       n <- templateModeCount p
       if n > 0

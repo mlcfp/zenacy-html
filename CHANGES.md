@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.5
+
+* Update for removal for ST MonadFail instance
+
 ## 2.0.4
 
 * Remove whitespace around @ patterns for GHC 9
