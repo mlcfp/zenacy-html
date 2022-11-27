@@ -197,9 +197,12 @@ htmlZipLast (HTMLZipper y z) = case y of
     f c $ HTMLElement n s a []
   _ -> Nothing
   where
-    f [] n = Nothing
-    f xs n = let (h:ls) = reverse xs in Just $
-      HTMLZipper h ((HTMLCrumb n ls []):z)
+    f xs n =
+      case reverse xs of
+        (h:ls) ->
+          Just $ HTMLZipper h ((HTMLCrumb n ls []):z)
+        [] ->
+          Nothing
 
 -- | Moves the zipper to a named child element.
 htmlZipFind :: (HTMLNode -> Bool) -> HTMLZipper -> Maybe HTMLZipper

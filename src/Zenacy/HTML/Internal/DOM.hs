@@ -345,10 +345,15 @@ domDocument d = fromJust $ IntMap.lookup domRoot $ domNodes d
 
 -- | Sets the quirks mode for a document.
 domQuirksSet :: DOMQuirks -> DOM -> DOM
-domQuirksSet x d = domPutNode domRoot y' d
-  where
-    y = domDocument d
-    y' = y { domDocumentQuirksMode = x }
+domQuirksSet x d =
+  case (domDocument d) of
+    y@DOMDocument {} ->
+      let
+        y' = y { domDocumentQuirksMode = x }
+      in
+        domPutNode domRoot y' d
+    _otherwise ->
+      d
 
 -- | Gets the quirks mode for a document.
 domQuirksGet :: DOM -> DOMQuirks

@@ -908,9 +908,16 @@ activeFormatAny p@Parser {..} f = do
   pure $
     ( any f
     . domMapID d
-    . map (\(ParserFormatElement x _) -> x)
+    . mapMaybe g
     . takeWhile (not . formatItemIsMarker)
     ) a
+  where
+    g :: ParserFormatItem -> Maybe DOMID
+    g = \case
+      ParserFormatElement x _ ->
+        Just x
+      ParserFormatMarker ->
+        Nothing
 
 -- | Determines if the active format list contains an element.
 activeFormatContains :: Parser s -> DOMID -> ST s Bool
@@ -1072,30 +1079,38 @@ appropriateInsertionLocation p@Parser {..} override = do
           -- (2.2) Get last table in element stack.
           lastTable <- elementStackFind p $ \x ->
             elementDetailsType x == domMakeTypeHTML "table"
-          let Just (ElementDetails i1 x1 n1 _) = lastTemplate
-              Just (ElementDetails i2 x2 n2 _) = lastTable
+
           -- (2.3) Check for template and no table.
-          if | isJust lastTemplate && (isNothing lastTable || (i1 < i2)) ->
+          if | Just (ElementDetails i1 _ n1 _) <- lastTemplate
+             , Just (ElementDetails i2 _ _ _) <- lastTable
+             , i1 < i2 -> do
                  pure $ DOMPos (domTemplateContents n1) Nothing
-             -- (2.4) If no last table then use first element.
-             | isNothing lastTable -> do
-                 j <- fromJust <$> lastNodeID p
-                 pure $ DOMPos j Nothing
-             -- (2.5) Check last table parent node.
-             | domNodeParent n2 /= domNull ->
-                 pure $ DOMPos (domNodeParent n2) $ Just x2
-             | otherwise -> do
-                 -- (2.6) Previous element is above last table.
-                 prev <- fromJust <$> elementStackSucc p x2
-                 -- (2.7) Location is after previous element last child.
-                 pure $ DOMPos prev Nothing
+
+             | Just (ElementDetails _ _ n1 _) <- lastTemplate
+             , Nothing <- lastTable -> do
+                 pure $ DOMPos (domTemplateContents n1) Nothing
+
+             | otherwise -> case lastTable of
+                 Nothing -> do
+                   -- (2.4) If no last table then use first element.
+                   j <- fromJust <$> lastNodeID p
+                   pure $ DOMPos j Nothing
+                 Just (ElementDetails _ x2 n2 _) -> do
+                   -- (2.5) Check last table parent node.
+                   if | domNodeParent n2 /= domNull ->
+                          pure $ DOMPos (domNodeParent n2) $ Just x2
+                      | otherwise -> do
+                          -- (2.6) Previous element is above last table.
+                          prev <- fromJust <$> elementStackSucc p x2
+                          -- (2.7) Location is after previous element last child.
+                          pure $ DOMPos prev Nothing
         else
           pure $ DOMPos target Nothing
       getNode p (domPosParent adjusted) >>= \case
         Just DOMTemplate{..} ->
           -- (3) Use template contents instead.
           pure $ DOMPos domTemplateContents Nothing
-        _ ->
+        _otherwise ->
           -- (4) Return adjusted insertion location.
           pure adjusted
 
