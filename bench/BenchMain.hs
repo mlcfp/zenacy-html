@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
@@ -34,8 +35,11 @@ setupEnv = do
 countTokens :: ByteString -> Int
 countTokens s =
   runST $ do
-    Right x <- lexerNew def { lexerOptionInput = s }
-    go x 0
+    lexerNew def { lexerOptionInput = s } >>= \case
+      Left x -> do
+        error $ bcUnpack x
+      Right x -> do
+        go x 0
   where
     go x a = do
       lexerNext x

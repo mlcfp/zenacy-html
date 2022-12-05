@@ -2,8 +2,8 @@
 #
 #-------------------------------------------------------------------------------
 
-#resolver: nightly-2022-11-26
-resolver: lts-20.1
+resolver: nightly-2022-12-05
+#resolver: lts-20.1
 
 #nix:
 #  enable: true

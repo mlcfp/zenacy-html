@@ -1,5 +1,9 @@
 # Change Log
 
+## 2.0.7
+
+* Update benchmarks for ST MonadFail removal
+
 ## 2.0.6
 
 * Relax bounds on mtl and vector
