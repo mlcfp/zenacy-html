@@ -1,5 +1,10 @@
 # Change Log
 
+## 2.1.0
+
+* Fix removal of earliest active format element
+* Fix DOM node attribute matching
+
 ## 2.0.7
 
 * Update benchmarks for ST MonadFail removal

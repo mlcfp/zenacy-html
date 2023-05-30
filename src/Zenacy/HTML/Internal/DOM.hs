@@ -45,7 +45,9 @@ module Zenacy.HTML.Internal.DOM
   , domElementHasAttr
   , domElementFindAttr
   , domElementAttrValue
+  , domAttrEq
   , domAttrMerge
+  , domAttrSet
   , domMatch
   , domLastChild
   , domMapID
@@ -110,6 +112,13 @@ import qualified Data.IntMap as IntMap
   , lookup
   , insert
   , keys
+  )
+import Data.Set
+  ( Set
+  )
+import qualified Data.Set as Set
+  ( empty
+  , insert
   )
 import Data.Sequence
   ( Seq(..)
@@ -492,11 +501,20 @@ domMatch :: DOM -> DOMID -> DOMID -> Bool
 domMatch d i j =
   case (domGetNode d i, domGetNode d j) of
     (Just (DOMElement _ _ n1 s1 a1 _), Just (DOMElement _ _ n2 s2 a2 _)) ->
-      n1 == n2 && s1 == s2 && a1 == a1
+      n1 == n2 && s1 == s2 && domAttrEq a1 a2
     (Just (DOMTemplate _ _ s1 a1 _ ), Just (DOMTemplate _ _ s2 a2 _)) ->
-      s1 == s2 && a1 == a1
+      s1 == s2 && domAttrEq a1 a2
     _otherwise ->
       False
+
+-- | Determine if two sequences of attributes are equivalent.
+domAttrEq :: Seq DOMAttr -> Seq DOMAttr -> Bool
+domAttrEq a b = domAttrSet a == domAttrSet b
+
+-- | Converta an attribute sequence to an attribute set in order
+-- to be insensitive to order.
+domAttrSet :: Seq DOMAttr -> Set DOMAttr
+domAttrSet = foldr Set.insert Set.empty
 
 -- | Returns the last child of a node if it exists.
 domLastChild :: DOM -> DOMID -> Maybe DOMID

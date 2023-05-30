@@ -1,5 +1,7 @@
 module Main where
 
+import Examples
+import Issues
 import Samples
 import Zenacy.HTML.Internal.Buffer.Tests
 import Zenacy.HTML.Internal.Entity.Tests
@@ -29,5 +31,7 @@ main = defaultMain
   , testTrie
   , testZip
   , testQuery
+  , testExamples
   , testSamples
+  , testIssues
   ]

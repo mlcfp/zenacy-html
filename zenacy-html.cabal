@@ -1,5 +1,5 @@
 cabal-version: >= 1.10
-version: 2.0.7
+version: 2.1.0
 name:
   zenacy-html
 synopsis:
@@ -149,7 +149,10 @@ test-suite zenacy-html-test
   default-language:
     Haskell2010
   other-modules:
-    Zenacy.HTML.Internal.Buffer.Tests
+    Examples
+    , Issues
+    , Samples
+    , Zenacy.HTML.Internal.Buffer.Tests
     , Zenacy.HTML.Internal.Entity.Tests
     , Zenacy.HTML.Internal.HTML.Tests
     , Zenacy.HTML.Internal.Image.Tests
@@ -160,7 +163,6 @@ test-suite zenacy-html-test
     , Zenacy.HTML.Internal.Token.Tests
     , Zenacy.HTML.Internal.Trie.Tests
     , Zenacy.HTML.Internal.Zip.Tests
-    , Samples
 
 benchmark zenacy-html-bench
   type:

@@ -883,17 +883,26 @@ activeFormatAddMarker :: Parser s -> ST s ()
 activeFormatAddMarker Parser {..} =
   uref parserActiveFormatList (ParserFormatMarker:)
 
+-- | Limits matching active format elements up to the first
+-- marker to two so that a third can be added (Noah's Ark clause).
+activeFormatLimit :: (DOMID -> Bool) -> [ParserFormatItem] -> [ParserFormatItem]
+activeFormatLimit match xs =
+  f 0 xs
+  where
+    f :: Int -> [ParserFormatItem] -> [ParserFormatItem]
+    f n [] = []
+    f n (e@(ParserFormatMarker):es) = e : es
+    f n (e@(ParserFormatElement domId _):es)
+      | match domId = if n < 2 then e : f (n + 1) es else f n es
+      | otherwise = e : f n es
+
 -- | Adds an element to the list of active format elements.
 activeFormatAddElement :: Parser s -> Token -> DOMID -> ST s ()
 activeFormatAddElement p@Parser {..} t x = do
   d <- getDOM p
   a <- activeFormatList p
-  let match (ParserFormatElement y _) = domMatch d x y
-      b = takeWhile (not . formatItemIsMarker) a
-      n = (foldr (\i z -> z + if match i then 1 else 0) 0 b) :: Int
-      a' = if n < 3 then a else removeFirst match a
-      e' = ParserFormatElement x t : a'
-  wref parserActiveFormatList e'
+  wref parserActiveFormatList $
+    ParserFormatElement x t : activeFormatLimit (domMatch d x) a
 
 -- | Adds the current node to the list of active format elements.
 activeFormatAddCurrentNode :: Parser s -> Token -> ST s ()
@@ -952,15 +961,15 @@ activeFormatReconstruct p = do
   case a of
     [] -> pure ()
     (x:xs)
-      | isOpen e x -> pure ()
+      | openOrMarker e x -> pure ()
       | otherwise -> do
-          let b = reverse . takeWhile (not . isOpen e) $ a
+          let b = reverse . takeWhile (not . openOrMarker e) $ a
               a' = drop (length b) a
           reopen p b a'
 
 -- | Determines is a format item is open.
-isOpen :: [DOMID] -> ParserFormatItem -> Bool
-isOpen x = \case
+openOrMarker :: [DOMID] -> ParserFormatItem -> Bool
+openOrMarker x = \case
    ParserFormatMarker -> True
    ParserFormatElement i _ -> i `elem` x
 
