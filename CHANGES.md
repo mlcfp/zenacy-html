@@ -1,5 +1,9 @@
 # Change Log
 
+## next (2.2.?)
+
+* Expose document mode in HTML document
+
 ## 2.1.0
 
 * Fix removal of earliest active format element

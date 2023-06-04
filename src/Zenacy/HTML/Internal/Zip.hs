@@ -157,8 +157,8 @@ htmlZipParent = \case
   HTMLZipper x ((HTMLCrumb n ls rs):cs) ->
     let c = reverse ls <> [x] <> rs
     in case n of
-      HTMLDocument n [] ->
-        Just $ HTMLZipper (HTMLDocument n c) cs
+      HTMLDocument n m [] ->
+        Just $ HTMLZipper (HTMLDocument n m c) cs
       HTMLDoctype n p s ->
         Nothing
       HTMLFragment n [] ->
@@ -175,8 +175,8 @@ htmlZipParent = \case
 -- | Moves the zipper to the first child node.
 htmlZipFirst :: HTMLZipper -> Maybe HTMLZipper
 htmlZipFirst (HTMLZipper y z) = case y of
-  HTMLDocument n c ->
-    f c $ HTMLDocument n []
+  HTMLDocument n m c ->
+    f c $ HTMLDocument n m []
   HTMLFragment n c ->
     f c $ HTMLFragment n []
   HTMLElement n s a c ->
@@ -189,8 +189,8 @@ htmlZipFirst (HTMLZipper y z) = case y of
 -- | Moves the zipper to the last child node.
 htmlZipLast :: HTMLZipper -> Maybe HTMLZipper
 htmlZipLast (HTMLZipper y z) = case y of
-  HTMLDocument n c ->
-    f c $ HTMLDocument n []
+  HTMLDocument n m c ->
+    f c $ HTMLDocument n m []
   HTMLFragment n c ->
     f c $ HTMLFragment n []
   HTMLElement n s a c ->
@@ -207,8 +207,8 @@ htmlZipLast (HTMLZipper y z) = case y of
 -- | Moves the zipper to a named child element.
 htmlZipFind :: (HTMLNode -> Bool) -> HTMLZipper -> Maybe HTMLZipper
 htmlZipFind p (HTMLZipper y z) = case y of
-  HTMLDocument n c ->
-    f c $ HTMLDocument n []
+  HTMLDocument n m c ->
+    f c $ HTMLDocument n m []
   HTMLFragment n c ->
     f c $ HTMLFragment n []
   HTMLElement n s a c ->
@@ -281,8 +281,8 @@ htmlZipDelete = \case
   HTMLZipper x ((HTMLCrumb n l r):cs) ->
     let c = reverse l <> r
     in case n of
-      HTMLDocument n [] ->
-        Just $ HTMLZipper (HTMLDocument n c) cs
+      HTMLDocument n m [] ->
+        Just $ HTMLZipper (HTMLDocument n m c) cs
       HTMLFragment n [] ->
         Just $ HTMLZipper (HTMLFragment n c) cs
       HTMLElement n s a [] ->
@@ -296,8 +296,8 @@ htmlZipCollapse = \case
   HTMLZipper x ((HTMLCrumb n l r):cs) ->
     let c = reverse l <> htmlNodeContent x <> r
     in case n of
-      HTMLDocument n [] ->
-        Just $ HTMLZipper (HTMLDocument n c) cs
+      HTMLDocument n m [] ->
+        Just $ HTMLZipper (HTMLDocument n m c) cs
       HTMLFragment n [] ->
         Just $ HTMLZipper (HTMLFragment n c) cs
       HTMLElement n s a [] ->

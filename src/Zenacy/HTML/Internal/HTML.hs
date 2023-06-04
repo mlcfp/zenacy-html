@@ -14,6 +14,7 @@ module Zenacy.HTML.Internal.HTML
   , HTMLAttr(..)
   , HTMLNamespace(..)
   , HTMLAttrNamespace(..)
+  , HTMLQuirks(..)
   , htmlParse
   , htmlParseEasy
   , htmlFragment
@@ -83,6 +84,7 @@ data HTMLError = HTMLError
 data HTMLNode
   = HTMLDocument
     { htmlDocumentName       :: !Text           -- ^ The document name.
+    , htmlDocumentMode       :: !HTMLQuirks     -- ^ The document mode.
     , htmlDocumentChildren   :: ![HTMLNode]     -- ^ The document children.
     }
   | HTMLDoctype
@@ -148,6 +150,13 @@ instance Default HTMLAttr where
     , htmlAttrNamespace = HTMLAttrNamespaceNone
     }
 
+-- | Indentifies the quirks mode.
+data HTMLQuirks
+  = HTMLQuirksNone     -- ^ Indicates a document in "no-quirks" mode.
+  | HTMLQuirksMode     -- ^ Indicates a document in "quirks" mode.
+  | HTMLQuirksLimited  -- ^ Indicates a document in "limited-quirks" mode.
+    deriving (Eq, Ord, Show)
+
 -- | Parses an HTML document.
 htmlParse :: HTMLOptions -> Text -> Either HTMLError HTMLResult
 htmlParse HTMLOptions {..} x =
@@ -181,6 +190,7 @@ htmlFragment HTMLOptions {..} x = Left def
 htmlDefaultDocument :: HTMLNode
 htmlDefaultDocument = HTMLDocument
   { htmlDocumentName     = T.empty
+  , htmlDocumentMode     = HTMLQuirksNone
   , htmlDocumentChildren = []
   }
 
@@ -249,6 +259,7 @@ nodeToHTML :: DOM -> DOMNode -> HTMLNode
 nodeToHTML d = go where
   go DOMDocument {..} = HTMLDocument
     { htmlDocumentName     = t domDocumentName
+    , htmlDocumentMode     = toHTMLQuirks domDocumentQuirksMode
     , htmlDocumentChildren = f domDocumentChildren
     }
   go DOMDoctype {..} = HTMLDoctype
@@ -282,3 +293,10 @@ nodeToHTML d = go where
   h = map attr . toList
   t = T.decodeUtf8
   attr (DOMAttr n v s) = HTMLAttr (t n) (t v) s
+
+-- | Converts DOM quirks to HTML quirks.
+toHTMLQuirks :: DOMQuirks -> HTMLQuirks
+toHTMLQuirks = \case
+  DOMQuirksNone    -> HTMLQuirksNone
+  DOMQuirksMode    -> HTMLQuirksMode
+  DOMQuirksLimited -> HTMLQuirksLimited

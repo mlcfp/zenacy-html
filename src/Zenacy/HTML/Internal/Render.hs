@@ -71,7 +71,7 @@ renderModal m = go 0 ""
   where
     go level parent node =
       case node of
-        HTMLDocument _ c ->
+        HTMLDocument _ _ c ->
           join $ map (go level parent) c
         HTMLDoctype n p s ->
           indent <> renderDoctype n p s

@@ -37,6 +37,7 @@ import Text.RawString.QQ
 testSamples :: Test
 testSamples = testGroup "Samples"
   [ testHello
+  , testQuirks
   , testRewrite
   , testExtract
   , testQuery
@@ -51,7 +52,7 @@ testHello = testCase "sample hello" $ do
 
   flip (assertEqual "Sample 2")
     (htmlParseEasy "<div>HelloWorld</div>")
-    (HTMLDocument ""
+    (HTMLDocument "" HTMLQuirksMode
       [ HTMLElement "html" HTMLNamespaceHTML []
           [ HTMLElement "head" HTMLNamespaceHTML [] []
           , HTMLElement "body" HTMLNamespaceHTML []
@@ -62,6 +63,7 @@ testHello = testCase "sample hello" $ do
     (htmlParseEasy "<div>HelloWorld</div>")
     HTMLDocument
       { htmlDocumentName = ""
+      , htmlDocumentMode = HTMLQuirksMode
       , htmlDocumentChildren =
         [ HTMLElement
           { htmlElementName = "html"
@@ -88,6 +90,15 @@ testHello = testCase "sample hello" $ do
                       { htmlTextData = "HelloWorld" }
                     ] } ] } ] } ] }
 
+testQuirks :: Test
+testQuirks = testCase "sample quirks" $ do
+  flip (assertEqual "Sample 1")
+    (htmlDocumentMode $ htmlParseEasy "<!DOCTYPE html><div>HelloWorld</div>")
+    HTMLQuirksNone
+  flip (assertEqual "Sample 1")
+    (htmlDocumentMode $ htmlParseEasy "<html><div>HelloWorld</div>")
+    HTMLQuirksMode
+
 testRewrite :: Test
 testRewrite = testCase "sample rewrite" $ do
   flip (assertEqual "Sample 1")
@@ -113,7 +124,7 @@ extract :: Text -> [Text]
 extract = go . htmlParseEasy
   where
     go = \case
-      HTMLDocument n c ->
+      HTMLDocument n m c ->
         concatMap go c
       e@(HTMLElement "a" s a c) ->
         case htmlElemAttrFind (htmlAttrHasName "href") e of
@@ -142,7 +153,7 @@ testQuery = testCase "sample query" $ do
       . htmlSpaceRemove
       . fromJust
       . htmlDocBody
-      . htmlParseEasy 
+      . htmlParseEasy
 
 query :: HTMLNode -> Maybe Text
 query = htmlQueryExec $ do
@@ -176,7 +187,7 @@ testQuery2 = testCase "sample query2" $ do
       . htmlSpaceRemove
       . fromJust
       . htmlDocBody
-      . htmlParseEasy 
+      . htmlParseEasy
 
 query2 :: HTMLNode -> HTMLNode
 query2 = htmlQueryTry $ do

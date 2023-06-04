@@ -58,7 +58,8 @@ import qualified Data.Map as Map
   , lookup
   )
 import Data.Maybe
-  ( isJust
+  ( fromMaybe
+  , isJust
   )
 import Data.Word
   ( Word8
@@ -77,9 +78,6 @@ import qualified Data.Vector.Storable.Mutable as U
   , grow
   )
 
-import Debug.Trace (trace)
-
-
 -- | Lexer options type.
 data LexerOptions = LexerOptions
   { lexerOptionInput          :: BS
@@ -88,6 +86,8 @@ data LexerOptions = LexerOptions
   -- ^ Indicates whether errors are logged.
   , lexerOptionIgnoreEntities :: Bool
   -- ^ Indicates that entities should not be tokenized.
+  , lexerOptionInitialState   :: Maybe LexerState
+  -- ^ Determines the initial state for the lexer when handling fragments.
   } deriving (Show)
 
 -- | Defines the skip mode.
@@ -131,6 +131,7 @@ instance Default LexerOptions where
     { lexerOptionInput          = bsEmpty
     , lexerOptionLogErrors      = False
     , lexerOptionIgnoreEntities = False
+    , lexerOptionInitialState   = Nothing
     }
 
 -- | Defines the lexer state.
@@ -392,7 +393,7 @@ lexerNew o@LexerOptions{..}
 lexerMake :: LexerOptions -> ST s (Lexer s)
 lexerMake LexerOptions{..} = do
   offset <- newSTRef 0
-  state  <- newSTRef StateData
+  state  <- newSTRef $ fromMaybe StateData lexerOptionInitialState
   ret    <- newSTRef StateData
   token  <- tokenBuffer
   buffer <- bufferNew

@@ -245,8 +245,7 @@ domAttrMake n v = DOMAttr n v def
 
 -- | Defines a default document.
 domDefaultDocument :: DOMNode
-domDefaultDocument =
-  DOMDocument
+domDefaultDocument = DOMDocument
   { domDocumentID         = domNull
   , domDocumentName       = bsEmpty
   , domDocumentChildren   = Seq.empty
@@ -256,8 +255,7 @@ domDefaultDocument =
 
 -- | Defines a default document type.
 domDefaultDoctype :: DOMNode
-domDefaultDoctype =
-  DOMDoctype
+domDefaultDoctype = DOMDoctype
   { domDoctypeID       = domNull
   , domDoctypeName     = bsEmpty
   , domDoctypePublicID = Nothing
@@ -267,8 +265,7 @@ domDefaultDoctype =
 
 -- | Defines a default document fragment.
 domDefaultFragment :: DOMNode
-domDefaultFragment =
-  DOMFragment
+domDefaultFragment = DOMFragment
   { domFragmentID       = domNull
   , domFragmentName     = bsEmpty
   , domFragmentChildren = Seq.empty
@@ -277,8 +274,7 @@ domDefaultFragment =
 
 -- | Defines a default element.
 domDefaultElement :: DOMNode
-domDefaultElement =
-  DOMElement
+domDefaultElement = DOMElement
   { domElementID         = domNull
   , domElementName       = bsEmpty
   , domElementNamespace  = HTMLNamespaceHTML
@@ -289,8 +285,7 @@ domDefaultElement =
 
 -- | Defines a default template.
 domDefaultTemplate :: DOMNode
-domDefaultTemplate =
-  DOMTemplate
+domDefaultTemplate = DOMTemplate
   { domTemplateID         = domNull
   , domTemplateNamespace  = HTMLNamespaceHTML
   , domTemplateAttributes = Seq.empty
@@ -300,8 +295,7 @@ domDefaultTemplate =
 
 -- | Defines a default text.
 domDefaultText :: DOMNode
-domDefaultText =
-  DOMText
+domDefaultText = DOMText
   { domTextID     = domNull
   , domTextData   = bsEmpty
   , domTextParent = domNull
@@ -309,8 +303,7 @@ domDefaultText =
 
 -- | Defines a default comment.
 domDefaultComment :: DOMNode
-domDefaultComment =
-  DOMComment
+domDefaultComment = DOMComment
   { domCommentID     = domNull
   , domCommentData   = bsEmpty
   , domCommentParent = domNull

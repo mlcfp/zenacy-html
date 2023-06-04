@@ -171,14 +171,14 @@ htmlNodeIsText _ = False
 
 -- | Gets the content of a node.
 htmlNodeContent :: HTMLNode -> [HTMLNode]
-htmlNodeContent (HTMLDocument _ c) = c
+htmlNodeContent (HTMLDocument _ _ c) = c
 htmlNodeContent (HTMLFragment _ c) = c
 htmlNodeContent (HTMLElement _ _ _ c) = c
 htmlNodeContent _ = []
 
 -- | Sets the content of a node.
 htmlNodeContentSet :: [HTMLNode] -> HTMLNode -> HTMLNode
-htmlNodeContentSet x (HTMLDocument n c) = HTMLDocument n x
+htmlNodeContentSet x (HTMLDocument n m c) = HTMLDocument n m x
 htmlNodeContentSet x (HTMLFragment n c) = HTMLFragment n x
 htmlNodeContentSet x (HTMLElement n s a c) = HTMLElement n s a x
 htmlNodeContentSet x y = y
