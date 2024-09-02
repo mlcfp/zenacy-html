@@ -69,7 +69,7 @@ library
     pretty-show       >= 1.6 && < 1.11,
     safe              >= 0.3.14 && < 0.4,
     safe-exceptions   >= 0.1.5.0 && < 0.2,
-    text              >= 1.2.2.0 && < 2.1,
+    text              >= 1.2.2.0 && < 2.2,
     transformers      >= 0.5.2 && < 0.7,
     vector            >= 0.11 && < 0.14,
     word8             >= 0.1.2 && < 0.2
