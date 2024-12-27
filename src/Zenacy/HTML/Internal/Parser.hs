@@ -283,7 +283,7 @@ parserMake ParserOptions{..} lexer = do
   table    <- newSTRef []
   aa       <- defaultAA
   aaRef    <- newSTRef aa
-  warn     <- newSTRef def
+  warn     <- newSTRef D.empty
   iframe   <- newSTRef False
   textMap  <- newSTRef def
   pure $ Parser

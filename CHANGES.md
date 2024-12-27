@@ -4,6 +4,12 @@
 
 * Expose document mode in HTML document
 
+## 2.1.2
+
+* Upgrade containers, data-default, and extra for GHC 9.10
+* Fix redundant greater check in 12.2.5.52 Comment end bang state
+* Do not use def to initialize empty DList
+
 ## 2.1.1
 
 * Support updated bytestring and text versions for resolver >= 23.1

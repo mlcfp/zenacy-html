@@ -1642,10 +1642,7 @@ doCommentEnd x@Lexer {..} = do
 doCommentEndBang :: Lexer s -> ST s ()
 doCommentEndBang x@Lexer {..} = do
   c <- nextWord x
-  if | c == chrGreater -> do
-         state x StateData
-         emit x
-     | c == chrHyphen -> do
+  if | c == chrHyphen -> do
          tokenCommentAppend chrHyphen lexerToken
          tokenCommentAppend chrHyphen lexerToken
          tokenCommentAppend chrExclamation lexerToken

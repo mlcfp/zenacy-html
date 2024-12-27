@@ -1,5 +1,5 @@
 cabal-version: >= 1.10
-version: 2.1.1
+version: 2.1.2
 name:
   zenacy-html
 synopsis:
@@ -61,10 +61,10 @@ library
   build-depends:
     base              == 4.*,
     bytestring        >= 0.10.6.0 && < 0.13,
-    containers        >= 0.5.7.1 && < 0.7,
-    data-default      >= 0.7.1.1 && < 0.8,
+    containers        >= 0.5.7.1 && < 0.8,
+    data-default      >= 0.7.1.1 && < 0.9,
     dlist             >= 0.8 && < 1.1,
-    extra             >= 1.4 && < 1.8,
+    extra             >= 1.4 && < 1.9,
     mtl               >= 2.1 && < 2.4,
     pretty-show       >= 1.6 && < 1.11,
     safe              >= 0.3.14 && < 0.4,
