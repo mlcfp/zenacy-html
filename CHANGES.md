@@ -4,6 +4,10 @@
 
 * Expose document mode in HTML document
 
+## 2.1.1
+
+* Support updated bytestring and text versions for resolver >= 23.1
+
 ## 2.1.0
 
 * Fix removal of earliest active format element

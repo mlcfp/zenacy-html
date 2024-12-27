@@ -1,5 +1,5 @@
 cabal-version: >= 1.10
-version: 2.1.0
+version: 2.1.1
 name:
   zenacy-html
 synopsis:
@@ -23,7 +23,7 @@ author:
 maintainer:
   Michael Williams <mlcfp@icloud.com>
 copyright:
-  Copyright (C) 2015-2022 Michael P Williams
+  Copyright (C) 2015-2025 Michael P Williams
 category:
   Web
 build-type:
@@ -60,7 +60,7 @@ library
     , Zenacy.HTML.Internal.Zip
   build-depends:
     base              == 4.*,
-    bytestring        >= 0.10.6.0 && < 0.12,
+    bytestring        >= 0.10.6.0 && < 0.13,
     containers        >= 0.5.7.1 && < 0.7,
     data-default      >= 0.7.1.1 && < 0.8,
     dlist             >= 0.8 && < 1.1,
@@ -69,7 +69,7 @@ library
     pretty-show       >= 1.6 && < 1.11,
     safe              >= 0.3.14 && < 0.4,
     safe-exceptions   >= 0.1.5.0 && < 0.2,
-    text              >= 1.2.2.0 && < 2.1,
+    text              >= 1.2.2.0 && < 2.2,
     transformers      >= 0.5.2 && < 0.7,
     vector            >= 0.11 && < 0.14,
     word8             >= 0.1.2 && < 0.2
